@@ -1,9 +1,13 @@
 #/bin/bash
 # Enable the serial port on the UART for all Raspberry Pis as of 11/2016
 port="$(ls -l /dev | grep 'serial0' | awk '{print $NF}')"
+function die {
+  echo $1 >&2
+  exit -1
+}
 if [[ -z "$port" ]]; then
   die "No serial0 found"
-}
+fi
 if [[ "$port" = "ttyAMA0" ]]; then
   echo "Raspberry Pi 3 port found"
 else
