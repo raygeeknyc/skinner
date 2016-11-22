@@ -19,10 +19,10 @@ console="$(grep -e 'console=(serial0|$port'  /boot/cmdline.txt)"
 if [[ -n "$console" ]]; then
   die "please remove console spec from /boot/cmdline.txt"
 fi
-config="$(grep "enable_uart=1" /etc/config.txt)"
+config="$(grep "enable_uart=1" /boot/config.txt)"
 if [[ -z "$config" ]]; then
-  echo "fixing /etc/config.txt"
-  cat etc_config.txt >> /etc/config.txt
+  echo "fixing /boot/config.txt"
+  cat boot_config.txt >> /boot/config.txt
 fi
 echo "UART is on /dev/ttyS0"
 exit 0
