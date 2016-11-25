@@ -3,31 +3,39 @@ import cv2
 import time
 
 frameTimerDuration = 1
+
+# these are the resolution of the output display, set these
 displayWidth = 32.0
 displayHeight = 16.0
-displayAspectRatio = displayHeight / displayWidth
+# These are the horizontal margins of the input feed, everything else scales to fit these
+xLeft = 30
+xRight = 30
+
 
 # Open cam, decode image, show in window
 cap = cv2.VideoCapture(0) # use 1 or 2 or ... for other camera
 cv2.namedWindow("Original")
 cv2.namedWindow("Cropped")
 cv2.namedWindow("Downsampled")
-key = -1
+
+# read one frame to get its resolution
 success, img = cap.read()
 print("image resolution (x,y) %d,%d" % (len(img), len(img[0])))
-xMin = 0
-yMin = 0
-xMax = 640
-height = (displayAspectRatio * len(img))
-yMin = (len(img) - height)/2
-yMax = yMin + height
 
-downsampleXFactor = displayWidth / xMax
-downsampleYFactor = displayHeight / yMax
+_displayAspectRatio = displayHeight / displayWidth
+_xMin = xLeft
+_xMax = len(img[0])-xRight
+_height = (_displayAspectRatio * len(img))
+_yMin = (len(img) - _height)/2
+_yMax = _yMin + _height
+
+downsampleXFactor = displayWidth / _xMax
+downsampleYFactor = displayHeight / _yMax
 print "scaling (x,y) %f, %f" % (downsampleXFactor, downsampleYFactor)
+
 frameTimer = time.time() + frameTimerDuration
-print "frame sampling from %f to %f" % (time.time(), frameTimer)
 frameCounter = 0
+key = -1
 while(key < 0):
     success, img = cap.read()
     frameCounter += 1
@@ -35,7 +43,7 @@ while(key < 0):
         print "processed %d frames in %f seconds" % (frameCounter, frameTimerDuration)
         frameCounter = 0
         frameTimer = time.time() + frameTimerDuration
-    cropImg = img[yMin:yMax,xMin:xMax] # this is all there is to cropping
+    cropImg = img[_yMin:_yMax,_xMin:_xMax] # this is all there is to cropping
     small = cv2.resize(cropImg, (0,0), fx=downsampleXFactor, fy=downsampleYFactor) 
 
     cv2.imshow("Original", img)
