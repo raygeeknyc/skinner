@@ -15,7 +15,7 @@ framerate = 0
 displayWidth = 32.0
 displayHeight = 16.0
 
-# These are the horizontal margins of the input feed, everything else scales to fit these
+# These are the horizontal margins of the input feed to crop, everything else scales to fit these
 xLeft = 30
 xRight = 30
 
@@ -27,12 +27,9 @@ cap = PiRGBArray(camera)
 cap = PiRGBArray(camera, size=resolution)
 stream = camera.capture_continuous(cap, format="rgb", use_video_port=True)
 
-#cv2.namedWindow("Original")
-#cv2.namedWindow("Cropped")
-#cv2.namedWindow("Downsampled")
-
-# read one frame to get its resolution
-print("image resolution (x,y) %d,%d" % resolution)
+cv2.namedWindow("Original")
+cv2.namedWindow("Cropped")
+cv2.namedWindow("Downsampled")
 
 _displayAspectRatio = displayHeight / displayWidth
 _xMin = xLeft
@@ -58,12 +55,11 @@ try:
 			frameTimer = time.time() + frameTimerDuration
 		cropImg = img[_yMin:_yMax,_xMin:_xMax] # this is all there is to cropping
 		small = cv2.resize(img, (0,0), fx=downsampleXFactor, fy=downsampleYFactor) 
+		cv2.imshow("Original", img)
+		cv2.imshow("Cropped", cropImg)
+		cv2.imshow("Downsampled", small)
 except KeyboardInterrupt as e:
 	print "Interrupted"
-
-#    cv2.imshow("Original", img)
-#    cv2.imshow("Cropped", cropImg)
-#    cv2.imshow("Downsampled", small)
 
 stream.close()
 cap.close()
