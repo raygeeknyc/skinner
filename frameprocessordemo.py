@@ -44,7 +44,7 @@ while(key < 0):
         frameCounter = 0
         frameTimer = time.time() + frameTimerDuration
     cropImg = img[_yMin:_yMax,_xMin:_xMax] # this is all there is to cropping
-    small = cv2.resize(cropImg, (0,0), fx=downsampleXFactor, fy=downsampleYFactor) 
+    small = cv2.resize(img, (0,0), fx=downsampleXFactor, fy=downsampleYFactor) 
 
     cv2.imshow("Original", img)
     cv2.imshow("Cropped", cropImg)
