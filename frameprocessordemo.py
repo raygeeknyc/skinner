@@ -1,5 +1,3 @@
-from picamera import PiCamera
-from picamera.array import PiRGBArray
 import cv2
 import time
 
@@ -16,16 +14,14 @@ displayWidth = 32.0
 displayHeight = 16.0
 
 # These are the horizontal margins of the input feed to crop, everything else scales to fit these
-xLeft = 30
-xRight = 30
+xLeft = 0
+xRight = 0
 
-camera = PiCamera()
-camera.resolution = resolution
-if framerate > 0:
-	camera.framerate=framerate
-cap = PiRGBArray(camera)
-cap = PiRGBArray(camera, size=resolution)
-stream = camera.capture_continuous(cap, format="rgb", use_video_port=True)
+# Open cam, decode image, show in window
+cap = cv2.VideoCapture(0) # use 1 or 2 or ... for other camera
+success, img = cap.read()
+resolution = (len(img[0]), len(img))
+print "input resolution is %d,%d" % resolution
 
 cv2.namedWindow("Original")
 cv2.namedWindow("Cropped")
@@ -45,20 +41,22 @@ print "scaling (x,y) %f, %f" % (downsampleXFactor, downsampleYFactor)
 frameTimer = time.time() + frameTimerDuration
 frameCounter = 0
 try:
-	for frame in stream:
-		img = frame.array
-		cap.truncate(0)
+	key = -1
+	while(key < 0):
+		success, img = cap.read()
 		frameCounter += 1
 		if time.time() > frameTimer:
 			print "processed %d frames in %f seconds" % (frameCounter, frameTimerDuration)
 			frameCounter = 0
 			frameTimer = time.time() + frameTimerDuration
-		cropImg = img[_yMin:_yMax,_xMin:_xMax] # this is all there is to cropping
-		small = cv2.resize(img, (0,0), fx=downsampleXFactor, fy=downsampleYFactor) 
+		cropImg = img[_yMin:_yMax,_xMin:_xMax]
+		small = cv2.resize(cropImg, (0,0), fx=downsampleXFactor, fy=downsampleYFactor) 
 		cv2.imshow("Original", img)
 		cv2.imshow("Cropped", cropImg)
 		cv2.imshow("Downsampled", small)
-		Serial.write(len(byte[](small)))
+		print "Frame shape %d,%d" % (len(small[0]), len(small))
+		print "%d bytes in frame data" % len(small.tostring())
+		key = cv2.waitKey(1)
 except KeyboardInterrupt as e:
 	print "Interrupted"
 
