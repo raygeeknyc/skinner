@@ -58,6 +58,7 @@ try:
 		cv2.imshow("Original", img)
 		cv2.imshow("Cropped", cropImg)
 		cv2.imshow("Downsampled", small)
+		Serial.write(len(byte[](small)))
 except KeyboardInterrupt as e:
 	print "Interrupted"
 
