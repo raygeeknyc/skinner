@@ -22,21 +22,25 @@ cap = cv2.VideoCapture(0) # use 1 or 2 or ... for other camera
 success, img = cap.read()
 resolution = (len(img[0]), len(img))
 print "input resolution is %d,%d" % resolution
+print "target resolution is %d,%d" % (displayWidth, displayHeight)
 
 cv2.namedWindow("Original")
 cv2.namedWindow("Cropped")
 cv2.namedWindow("Downsampled")
 
 _displayAspectRatio = displayHeight / displayWidth
+print "aspect ratio %f" % _displayAspectRatio
 _xMin = xLeft
-_xMax = resolution[0]
-_height = (_displayAspectRatio * resolution[1])
-_yMin = (resolution[1] - _height)/2
+_xMax = resolution[0]-xRight
+_height = int(_displayAspectRatio * resolution[0])
+_yMin = int((resolution[1] - _height)/2)
 _yMax = _yMin + _height
 
 downsampleXFactor = displayWidth / _xMax
 downsampleYFactor = displayHeight / _yMax
-print "scaling (x,y) %f, %f" % (downsampleXFactor, downsampleYFactor)
+print "Crop to (%d,%d)=%d:(%d,%d)=%d" % (_xMin,_xMax,(_xMax-_xMin),_yMin,_yMax,(_yMax-_yMin))
+print "Scaling by (x,y) %f, %f" % (downsampleXFactor, downsampleYFactor)
+print "Scales to (%d,%d)" % ((_xMax-_xMin)*downsampleXFactor,(_yMax-_yMin)*downsampleYFactor)
 
 frameTimer = time.time() + frameTimerDuration
 frameCounter = 0
@@ -54,8 +58,10 @@ try:
 		cv2.imshow("Original", img)
 		cv2.imshow("Cropped", cropImg)
 		cv2.imshow("Downsampled", small)
-		print "Frame shape %d,%d" % (len(small[0]), len(small))
-		print "%d bytes in frame data" % len(small.tostring())
+		for row in small:
+			for cell in row:
+				pixel = cell
+				#print "(%d,%d,%d)" % (cell[0], cell[1], cell[2])
 		key = cv2.waitKey(1)
 except KeyboardInterrupt as e:
 	print "Interrupted"
