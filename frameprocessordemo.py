@@ -1,7 +1,7 @@
 import cv2
 import time
 
-print "Starting"
+print "Starting demo"
 frameTimerDuration = 1
 
 # This is the desired resolution of the Pi camera
