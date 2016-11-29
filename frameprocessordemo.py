@@ -33,14 +33,16 @@ print "aspect ratio %f" % _displayAspectRatio
 _xMin = xLeft
 _xMax = resolution[0]-xRight
 _height = int(_displayAspectRatio * resolution[0])
+_width = _xMax+1 - _xMin
 _yMin = int((resolution[1] - _height)/2)
 _yMax = _yMin + _height
+print "min = %d, max = %d, height = %d" % (_yMin, _yMax, _height)
 
-downsampleXFactor = displayWidth / _xMax
-downsampleYFactor = displayHeight / _yMax
+downsampleXFactor = displayWidth / _width
+downsampleYFactor = displayHeight / _height
 print "Crop to (%d,%d)=%d:(%d,%d)=%d" % (_xMin,_xMax,(_xMax-_xMin),_yMin,_yMax,(_yMax-_yMin))
 print "Scaling by (x,y) %f, %f" % (downsampleXFactor, downsampleYFactor)
-print "Scales to (%d,%d)" % ((_xMax-_xMin)*downsampleXFactor,(_yMax-_yMin)*downsampleYFactor)
+print "Scales to (%d,%d)" % (_width*downsampleXFactor,_height*downsampleYFactor)
 
 frameTimer = time.time() + frameTimerDuration
 frameCounter = 0
