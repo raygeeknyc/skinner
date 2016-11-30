@@ -5,10 +5,14 @@ import time
 print "Starting image processor"
 frameTimerDuration = 1
 
-# This is the desired resolution of the Pi camera
+# The desired resolution of the Pi camera
 resolution = (320, 240)
-# This is the desired maximum framerate, 0 for maximum possible throughput
+# The desired maximum framerate, 0 for maximum possible throughput
 framerate = 0
+# The serial BAUD rate
+BAUD = 230400
+# The serial port to use
+SERPORT = '/dev/serial0'
 
 # These are the resolution of the output display, set these
 displayWidth = 32.0
@@ -19,7 +23,7 @@ xLeft = 0
 xRight = 0
 
 # Open serial port at the highest tested standard BAUD rate
-#ser = serial.Serial('/dev/serial0', 230400, timeout=1)
+#ser = serial.Serial(SERPORT, BAUD, timeout=1)
 #ser.isOpen()
 
 # Open cam, decode image, show in window
