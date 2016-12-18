@@ -22,7 +22,7 @@ fi
 config="$(grep "enable_uart=1" /boot/config.txt)"
 if [[ -z "$config" ]]; then
   echo "fixing /boot/config.txt"
-  cat boot_config.txt >> /boot/config.txt
+  sudo cat boot_config.txt >> /boot/config.txt
 fi
 echo "UART is on /dev/ttyS0"
 exit 0
