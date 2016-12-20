@@ -11,6 +11,7 @@ frameTimerDuration = 1
 resolution = (320, 240)
 # The desired maximum framerate, 0 for maximum possible throughput
 framerate = 0
+
 # The serial BAUD rate
 BAUD = 230400
 # The serial port to use
@@ -33,12 +34,12 @@ xRight = 0
 #ser = serial.Serial(SERPORT, BAUD, timeout=1)
 #ser.isOpen()
 
+# Open the video capture device
 camera = PiCamera()
 camera.resolution = resolution
 if framerate > 0:
         camera.framerate=framerate
 cap = PiRGBArray(camera)
-cap = PiRGBArray(camera, size=resolution)
 stream = camera.capture_continuous(cap, format="rgb", use_video_port=True)
 
 print "input resolution is %d,%d" % resolution
@@ -65,11 +66,12 @@ print "Scaling by (x,y) %f, %f" % (downsampleXFactor, downsampleYFactor)
 print "Scales to (%d,%d)" % (_width*downsampleXFactor,_height*downsampleYFactor)
 
 def writePixels(pixelData):
-	print "row of %d bytes" % len(pixelData)
+	print "row of %d pixels" % len(pixelData)
 	return
 	written = ser.write(pixel)
 	if written != len(pixelData):
 		print "error - wrote %d but only sent %d" % (len(pixelData), written)
+
 frameTimer = time.time() + frameTimerDuration
 frameCounter = 0
 frameTimer = time.time() + frameTimerDuration
@@ -86,20 +88,12 @@ try:
                 cropImg = img[_yMin:_yMax,_xMin:_xMax] # this is all there is to cropping
                 small = cv2.resize(img, (0,0), fx=downsampleXFactor, fy=downsampleYFactor)
 
-		success, img = cap.read()
-		frameCounter += 1
-		if time.time() > frameTimer:
-			print "processed %d frames in %f seconds" % (frameCounter, frameTimerDuration)
-			frameCounter = 0
-			frameTimer = time.time() + frameTimerDuration
-		cropImg = img[_yMin:_yMax,_xMin:_xMax]
-		small = cv2.resize(cropImg, (0,0), fx=downsampleXFactor, fy=downsampleYFactor) 
 		cv2.imshow("Original", img)
 		cv2.imshow("Cropped", cropImg)
 		cv2.imshow("Downsampled", small)
 		for row in small:
 			print "sending row of %d pixels" % len(row)
-			writePixels(row.tobytes())
+			writePixels(row)
 		key = cv2.waitKey(1)
 except KeyboardInterrupt as e:
 	print "Interrupted"
