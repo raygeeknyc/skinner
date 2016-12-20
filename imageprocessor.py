@@ -1,3 +1,5 @@
+from picamera import PiCamera
+from picamera.array import PiRGBArray
 import cv2
 import serial
 import time
@@ -14,6 +16,11 @@ BAUD = 230400
 # The serial port to use
 SERPORT = '/dev/serial0'
 
+# This is the desired resolution of the Pi camera
+resolution = (320, 240)
+# This is the desired maximum framerate, 0 for maximum possible throughput
+framerate = 0
+
 # These are the resolution of the output display, set these
 displayWidth = 32.0
 displayHeight = 16.0
@@ -26,10 +33,14 @@ xRight = 0
 #ser = serial.Serial(SERPORT, BAUD, timeout=1)
 #ser.isOpen()
 
-# Open cam, decode image, show in window
-cap = cv2.VideoCapture(0) # use 1 or 2 or ... for other camera
-success, img = cap.read()
-resolution = (len(img[0]), len(img))
+camera = PiCamera()
+camera.resolution = resolution
+if framerate > 0:
+        camera.framerate=framerate
+cap = PiRGBArray(camera)
+cap = PiRGBArray(camera, size=resolution)
+stream = camera.capture_continuous(cap, format="rgb", use_video_port=True)
+
 print "input resolution is %d,%d" % resolution
 print "target resolution is %d,%d" % (displayWidth, displayHeight)
 
@@ -61,9 +72,20 @@ def writePixels(pixelData):
 		print "error - wrote %d but only sent %d" % (len(pixelData), written)
 frameTimer = time.time() + frameTimerDuration
 frameCounter = 0
+frameTimer = time.time() + frameTimerDuration
+frameCounter = 0
 try:
-	key = -1
-	while(key < 0):
+        for frame in stream:
+                img = frame.array
+                cap.truncate(0)
+                frameCounter += 1
+                if time.time() > frameTimer:
+                        print "processed %d frames in %f seconds" % (frameCounter, frameTimerDuration)
+                        frameCounter = 0
+                        frameTimer = time.time() + frameTimerDuration
+                cropImg = img[_yMin:_yMax,_xMin:_xMax] # this is all there is to cropping
+                small = cv2.resize(img, (0,0), fx=downsampleXFactor, fy=downsampleYFactor)
+
 		success, img = cap.read()
 		frameCounter += 1
 		if time.time() > frameTimer:
