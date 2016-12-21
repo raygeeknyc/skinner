@@ -67,6 +67,7 @@ print "Scales to (%d,%d)" % (_width*downsampleXFactor,_height*downsampleYFactor)
 
 def writePixels(pixelData):
 	print "row of %d pixels" % len(pixelData)
+	print "Serializes to %d bytes" % len(pixelData.toBytes())
 	return
 	written = ser.write(pixel)
 	if written != len(pixelData):
