@@ -31,8 +31,8 @@ xLeft = 0
 xRight = 0
 
 # Open serial port at the highest tested standard BAUD rate
-#ser = serial.Serial(SERPORT, BAUD, timeout=1)
-#ser.isOpen()
+ser = serial.Serial(SERPORT, BAUD, timeout=1)
+ser.isOpen()
 
 # Open the video capture device
 camera = PiCamera()
@@ -67,11 +67,10 @@ print "Scales to (%d,%d)" % (_width*downsampleXFactor,_height*downsampleYFactor)
 
 def writePixels(pixelData):
 	print "row of %d pixels" % len(pixelData)
-	print "Serializes to %d bytes" % len(pixelData.toBytes())
-	return
-	written = ser.write(pixel)
-	if written != len(pixelData):
-		print "error - wrote %d but only sent %d" % (len(pixelData), written)
+	rgbValues = bytearray(pixelData.tostring())
+	written = ser.write(rgbValues)
+	if written != len(rgbValues):
+		print "error - wrote %d but only sent %d" % (len(rgbValues), written)
 
 frameTimer = time.time() + frameTimerDuration
 frameCounter = 0
@@ -100,6 +99,7 @@ except KeyboardInterrupt as e:
 	print "Interrupted"
 
 stream.close()
+ser.close()
 cap.close()
 camera.close()
 
