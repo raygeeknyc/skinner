@@ -12,9 +12,13 @@ int row;
 
 void setup() {
   Serial.begin(9600);
+  Serial.println("/setup");
+
   HWSERIAL.begin(230400);
   HWSERIAL.setTimeout(1);
   pinMode(LEDPIN, OUTPUT); 
+
+  
   digitalWrite(LEDPIN, HIGH);
   delay(500);
   digitalWrite(LEDPIN, LOW);
@@ -35,24 +39,24 @@ bool getNextByte(byte *b) {
 }
 
 void getFrame() {
-  while (row <= ROWS) {
-    if ((!(bytes % COLUMNS)) && bytes) {
-      Serial.print("Byte: ");
-      Serial.print(bytes);
-      Serial.print(" END OF ROW: ");
-      Serial.println(row++);
-    }
-    if ((!(row % ROWS)) && row) {
-      Serial.print("END OF FRAME: ");
-      Serial.println(frame++);
+  bytes = 0;
+  while (row < ROWS) {
+    byte b;
+    while (!getNextByte(&b)) ;
+    bytes += 1;
+    if (!(bytes % COLUMNS)) {
+      row += 1;
     }
   }
+  Serial.print("END OF FRAME: ");
+  Serial.println(frame++);
   row = 0;
 }
 
 bool syncToFrame() {
   byte b = ' ';
-  while ((!getNextByte(&b)) && b != FRAME_HEADER_1) ;
+  while ((!getNextByte(&b)) || b != FRAME_HEADER_1) ;
+
   while (!getNextByte(&b)) ;
   if (b != FRAME_HEADER_2) {
     return false;
