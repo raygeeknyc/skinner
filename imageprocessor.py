@@ -4,6 +4,9 @@ import cv2
 import serial
 import time
 
+_DEBUG = False
+# _DEBUG = True
+
 print "Starting image processor"
 frameTimerDuration = 1
 
@@ -31,9 +34,9 @@ xLeft = 0
 xRight = 0
 
 # These are the bytes of our frame header, used to sync frame boundaries on the receiver
-FRAME_HEADER1 = chr(int('0xf0',16))
-FRAME_HEADER2 = chr(int('0x00',16))
-FRAME_HEADER3 = chr(int('0x0f',16))
+FRAME_HEADER_1 = chr(int('0xf0',16))
+FRAME_HEADER_2 = chr(int('0x00',16))
+FRAME_HEADER_3 = chr(int('0x0f',16))
 
 # Open serial port at the highest tested standard BAUD rate
 ser = serial.Serial(SERPORT, BAUD, timeout=1)
@@ -50,9 +53,10 @@ stream = camera.capture_continuous(cap, format="rgb", use_video_port=True)
 print "input resolution is %d,%d" % resolution
 print "target resolution is %d,%d" % (displayWidth, displayHeight)
 
-cv2.namedWindow("Original")
-cv2.namedWindow("Cropped")
-cv2.namedWindow("Downsampled")
+if _DEBUG:
+	cv2.namedWindow("Original")
+	cv2.namedWindow("Cropped")
+	cv2.namedWindow("Downsampled")
 
 _displayAspectRatio = displayHeight / displayWidth
 print "aspect ratio %f" % _displayAspectRatio
@@ -87,11 +91,9 @@ def writeFrameHeader():
 
 def writeFrame(image):
 	for row in image:
-		print "sending row of %d pixels" % len(row)
 		writePixels(row)
 
 def writePixels(pixelData):
-	print "row of %d pixels" % len(pixelData)
 	rgbValues = bytearray(pixelData.tostring())
 	written = ser.write(rgbValues)
 	if written != len(rgbValues):
@@ -113,12 +115,15 @@ try:
                 cropImg = img[_yMin:_yMax,_xMin:_xMax] # this is all there is to cropping
                 small = cv2.resize(img, (0,0), fx=downsampleXFactor, fy=downsampleYFactor)
 
-		cv2.imshow("Original", img)
-		cv2.imshow("Cropped", cropImg)
-		cv2.imshow("Downsampled", small)
 		writeFrameHeader();
 		writeFrame(small);
-		key = cv2.waitKey(1)
+
+		if _DEBUG:
+			cv2.imshow("Original", img)
+			cv2.imshow("Cropped", cropImg)
+			cv2.imshow("Downsampled", small)
+			key = cv2.waitKey(1)
+
 except KeyboardInterrupt as e:
 	print "Interrupted"
 
@@ -127,4 +132,5 @@ ser.close()
 cap.close()
 camera.close()
 
-cv2.destroyAllWindows()
+if _DEBUG:
+	cv2.destroyAllWindows()
