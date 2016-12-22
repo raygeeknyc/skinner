@@ -30,6 +30,11 @@ displayHeight = 16.0
 xLeft = 0
 xRight = 0
 
+# These are the bytes of our frame header, used to sync frame boundaries on the receiver
+FRAME_HEADER1 = chr(int('0xf0',16))
+FRAME_HEADER2 = chr(int('0x00',16))
+FRAME_HEADER3 = chr(int('0x0f',16))
+
 # Open serial port at the highest tested standard BAUD rate
 ser = serial.Serial(SERPORT, BAUD, timeout=1)
 ser.isOpen()
@@ -65,6 +70,26 @@ print "Crop to (%d,%d)=%d:(%d,%d)=%d" % (_xMin,_xMax,(_xMax-_xMin),_yMin,_yMax,(
 print "Scaling by (x,y) %f, %f" % (downsampleXFactor, downsampleYFactor)
 print "Scales to (%d,%d)" % (_width*downsampleXFactor,_height*downsampleYFactor)
 
+def writeFrameHeader():
+	written = ser.write(FRAME_HEADER_1)
+	if written != 1:
+		print "failed to send header 1"
+		return False
+	written = ser.write(FRAME_HEADER_2)
+	if written != 1:
+		print "failed to send header 2"
+		return False
+	written = ser.write(FRAME_HEADER_3)
+	if written != 1:
+		print "failed to send header 3"
+		return False
+	return True
+
+def writeFrame(image):
+	for row in image:
+		print "sending row of %d pixels" % len(row)
+		writePixels(row)
+
 def writePixels(pixelData):
 	print "row of %d pixels" % len(pixelData)
 	rgbValues = bytearray(pixelData.tostring())
@@ -91,9 +116,8 @@ try:
 		cv2.imshow("Original", img)
 		cv2.imshow("Cropped", cropImg)
 		cv2.imshow("Downsampled", small)
-		for row in small:
-			print "sending row of %d pixels" % len(row)
-			writePixels(row)
+		writeFrameHeader();
+		writeFrame(small);
 		key = cv2.waitKey(1)
 except KeyboardInterrupt as e:
 	print "Interrupted"

@@ -4,6 +4,9 @@ long bytes;
 bool recvd;
 #define ROWS 16
 #define COLUMNS 32
+const byte FRAME_HEADER_1 = 0xF0;
+const byte FRAME_HEADER_2 = 0x00;
+const byte FRAME_HEADER_3 = 0x0F;
 int frame;
 int row;
 
@@ -31,28 +34,40 @@ bool getNextByte(byte *b) {
   return recvd;
 }
 
-void addByteToFrame(byte b) {
-  if ((!(bytes % COLUMNS)) && bytes) {
-    Serial.print("Byte: ");
-    Serial.print(bytes);
-    Serial.print(" END OF ROW: ");
-    Serial.println(row++);
+void getFrame() {
+  while (row <= ROWS) {
+    if ((!(bytes % COLUMNS)) && bytes) {
+      Serial.print("Byte: ");
+      Serial.print(bytes);
+      Serial.print(" END OF ROW: ");
+      Serial.println(row++);
+    }
+    if ((!(row % ROWS)) && row) {
+      Serial.print("END OF FRAME: ");
+      Serial.println(frame++);
+    }
   }
-  if ((!(row % ROWS)) && row) {
-    Serial.print("END OF FRAME: ");
-    Serial.println(frame++);
-    row = 0;
+  row = 0;
+}
+
+bool syncToFrame() {
+  byte b = ' ';
+  while ((!getNextByte(&b)) && b != FRAME_HEADER_1) ;
+  while (!getNextByte(&b)) ;
+  if (b != FRAME_HEADER_2) {
+    return false;
   }
+  while (!getNextByte(&b)) ;
+  if (b != FRAME_HEADER_3) {
+    return false;
+  }
+  return true;
 }
 
 void loop() {
   digitalWrite(LEDPIN, LOW);
-  byte b = ' ';
-  if (getNextByte(&b)) {
-    bytes += 1;
-    addByteToFrame(b);
-  }
-  if (bytes > 0) {
-    digitalWrite(LEDPIN, HIGH);
-  }
+  while (!syncToFrame()) ;
+  digitalWrite(LEDPIN, HIGH);
+  getFrame();
+  digitalWrite(LEDPIN, LOW);
 }
