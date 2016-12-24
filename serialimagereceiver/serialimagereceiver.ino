@@ -1,14 +1,27 @@
+#include <FastLED.h>
+
 #define HWSERIAL Serial2
 #define LEDPIN 13
-long bytes;
+int pixels;
 bool recvd;
 #define ROWS 16
 #define COLUMNS 32
+
+#define NUM_LEDS (COLUMNS * ROWS)
+CRGB leds_plus_safety_pixel[ NUM_LEDS];
+CRGB* const leds( leds_plus_safety_pixel);
+
 const byte FRAME_HEADER_1 = 0xF0;
 const byte FRAME_HEADER_2 = 0x00;
 const byte FRAME_HEADER_3 = 0x0F;
 int frame;
 int row;
+
+
+#define LED_PIN  3
+#define COLOR_ORDER RGB
+#define CHIPSET     WS2811
+#define BRIGHTNESS 64
 
 void setup() {
   Serial.begin(9600);
@@ -22,10 +35,15 @@ void setup() {
   digitalWrite(LEDPIN, HIGH);
   delay(500);
   digitalWrite(LEDPIN, LOW);
-  bytes=0;
+  pixels = 0;
   frame = 0;
   row = 0;
   recvd = false;
+
+  FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalSMD5050);
+  FastLED.setBrightness( BRIGHTNESS );
+  FastLED.show();
+
   Serial.println("/setup");
 }
 
@@ -39,12 +57,15 @@ bool getNextByte(byte *b) {
 }
 
 void getFrame() {
-  bytes = 0;
+  pixels = 0;
   while (row < ROWS) {
     byte b;
-    while (!getNextByte(&b)) ;
-    bytes += 1;
-    if (!(bytes % COLUMNS)) {
+    byte colors[3];
+    for (int colorIdx = 0; colorIdx < 3; colorIdx++)
+      while (!getNextByte(&(colors[colorIdx]))) ;
+    pixels += 1;
+    leds[row*COLUMNS+pixels] = CRGB( colors[0], colors[1], colors[2]);
+    if (!(pixels % COLUMNS)) {
       row += 1;
     }
   }
@@ -74,4 +95,5 @@ void loop() {
   digitalWrite(LEDPIN, HIGH);
   getFrame();
   digitalWrite(LEDPIN, LOW);
+  FastLED.show();
 }
