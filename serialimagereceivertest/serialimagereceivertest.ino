@@ -43,10 +43,11 @@ void setup() {
   row = 0;
   recvd = false;
 
-  FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalSMD5050);
-  FastLED.setBrightness( BRIGHTNESS );
-  FastLED.show();
+ // FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalSMD5050);
+ // FastLED.setBrightness( BRIGHTNESS );
+  //FastLED.show();
 
+  showLEDIndices();
   Serial.println("/setup");
 }
 
@@ -150,10 +151,25 @@ bool syncToFrame() {
 }
 
 void loop() {
-  digitalWrite(LEDPIN, LOW);
-  while (!syncToFrame()) Serial.println("Failed to Sync");
-  digitalWrite(LEDPIN, HIGH);
-  getFrame();
-  digitalWrite(LEDPIN, LOW);
-  FastLED.show();
 }
+
+void showLEDIndices() {
+  Serial.println("LED indices");
+  int idx = 0;
+  for (int r = 0; r < ROWS; r++) {
+    for (int p = 0; p < COLUMNS; p++) {
+      Serial.print("row ");
+      Serial.print(r);
+      Serial.print(" pixel ");
+      Serial.print(p);
+      Serial.print("->");
+      idx = getPixelForCoord(p, r);
+      if (idx > 511 || idx < 0) {
+        Serial.print("BAD Index ");
+      }
+      Serial.print(idx);
+      Serial.println();
+    }
+  }
+}
+
