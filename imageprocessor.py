@@ -7,7 +7,8 @@ import time
 _DEBUG = False
 # _DEBUG = True
 
-print "Starting image processor"
+if _DEBUG:
+	print "Starting image processor"
 frameTimerDuration = 1
 
 # The desired resolution of the Pi camera
@@ -71,8 +72,9 @@ print "min = %d, max = %d, height = %d" % (_yMin, _yMax, _height)
 downsampleXFactor = displayWidth / _width
 downsampleYFactor = displayHeight / _height
 print "Crop to (%d,%d)=%d:(%d,%d)=%d" % (_xMin,_xMax,(_xMax-_xMin),_yMin,_yMax,(_yMax-_yMin))
-print "Scaling by (x,y) %f, %f" % (downsampleXFactor, downsampleYFactor)
-print "Scales to (%d,%d)" % (_width*downsampleXFactor,_height*downsampleYFactor)
+if _DEBUG:
+	print "Scaling by (x,y) %f, %f" % (downsampleXFactor, downsampleYFactor)
+	print "Scales to (%d,%d)" % (_width*downsampleXFactor,_height*downsampleYFactor)
 
 def writeFrameHeader():
 	written = ser.write(FRAME_HEADER_1)
@@ -108,7 +110,7 @@ try:
                 img = frame.array
                 cap.truncate(0)
                 frameCounter += 1
-                if time.time() > frameTimer:
+                if _DEBUG and time.time() > frameTimer:
                         print "processed %d frames in %f seconds" % (frameCounter, frameTimerDuration)
                         frameCounter = 0
                         frameTimer = time.time() + frameTimerDuration
