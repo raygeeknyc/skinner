@@ -72,7 +72,8 @@ void getFrame() {
     for (int colorIdx = 0; colorIdx < 3; colorIdx++) {
       while (!getNextByte(&(colors[colorIdx])));
     }
-    leds[getPixelForCoord(pixels, row)] = CRGB( colors[0], colors[1], colors[2]);
+    // Pixel data from the imageoprocessor is GRB so rearrange the colors here
+    leds[getPixelForCoord(pixels, row)] = CRGB( colors[1], colors[0], colors[2]);
     pixels += 1;
 
     if (!(pixels % COLUMNS)) {
