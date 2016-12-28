@@ -98,12 +98,12 @@ def writeFrame(image):
 def writePixels(pixelData):
 	if _DEBUG:
 		for pixel in pixelData:
-			rgbPixel = bytearray(pixel.tostring())
-			print "pixel(%d): (%d,%d,%d)" % (len(rgbPixel), rgbPixel[0],rgbPixel[1],rgbPixel[2])
-	rgbValues = bytearray(pixelData.tostring())
-	written = ser.write(rgbValues)
-	if written != len(rgbValues):
-		print "error - wrote %d but only sent %d" % (len(rgbValues), written)
+			grbPixel = bytearray(pixel.tostring())
+			print "pixel(%d): (%d,%d,%d)" % (len(grbPixel), grbPixel[0],grbPixel[1],grbPixel[2])
+	grbValues = bytearray(pixelData.tostring())
+	written = ser.write(grbValues)
+	if written != len(grbValues):
+		print "error - wrote %d but only sent %d" % (len(grbValues), written)
 
 frameTimer = time.time() + frameTimerDuration
 frameCounter = 0
