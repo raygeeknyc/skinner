@@ -96,6 +96,9 @@ def writeFrame(image):
 		writePixels(row)
 
 def writePixels(pixelData):
+	for pixel in pixelData:
+		rgbPixel = bytearray(pixel.tostring())
+		print "pixel(%d): (%d,%d,%d)" % (len(rgbPixel), rgbPixel[0],rgbPixel[1],rgbPixel[2])
 	rgbValues = bytearray(pixelData.tostring())
 	written = ser.write(rgbValues)
 	if written != len(rgbValues):

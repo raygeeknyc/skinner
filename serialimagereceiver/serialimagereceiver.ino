@@ -71,9 +71,7 @@ void getFrame() {
     */
     for (int colorIdx = 0; colorIdx < 3; colorIdx++) {
       while (!getNextByte(&(colors[colorIdx])));
-      //Serial.print(".");
     }
-    //Serial.println();
     leds[getPixelForCoord(pixels, row)] = CRGB( colors[0], colors[1], colors[2]);
     pixels += 1;
 
