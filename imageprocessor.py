@@ -5,7 +5,7 @@ import serial
 import time
 
 _DEBUG = False
-# _DEBUG = True
+#_DEBUG = True
 
 if _DEBUG:
 	print "Starting image processor"
@@ -49,7 +49,7 @@ camera.resolution = resolution
 if framerate > 0:
         camera.framerate=framerate
 cap = PiRGBArray(camera)
-stream = camera.capture_continuous(cap, format="rgb", use_video_port=True)
+stream = camera.capture_continuous(cap, format="bgr", use_video_port=True)
 
 print "input resolution is %d,%d" % resolution
 print "target resolution is %d,%d" % (displayWidth, displayHeight)
@@ -96,9 +96,10 @@ def writeFrame(image):
 		writePixels(row)
 
 def writePixels(pixelData):
-	for pixel in pixelData:
-		rgbPixel = bytearray(pixel.tostring())
-		print "pixel(%d): (%d,%d,%d)" % (len(rgbPixel), rgbPixel[0],rgbPixel[1],rgbPixel[2])
+	if _DEBUG:
+		for pixel in pixelData:
+			rgbPixel = bytearray(pixel.tostring())
+			print "pixel(%d): (%d,%d,%d)" % (len(rgbPixel), rgbPixel[0],rgbPixel[1],rgbPixel[2])
 	rgbValues = bytearray(pixelData.tostring())
 	written = ser.write(rgbValues)
 	if written != len(rgbValues):
