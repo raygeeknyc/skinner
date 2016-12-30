@@ -14,9 +14,9 @@ const int  COLUMNS = PANEL_WIDTH;
 CRGB leds_plus_safety_pixel[ NUM_LEDS];
 CRGB* const leds( leds_plus_safety_pixel);
 
-const byte FRAME_HEADER_1 = 0xF0;
-const byte FRAME_HEADER_2 = 0x00;
-const byte FRAME_HEADER_3 = 0x0F;
+const byte FRAME_HEADER_1 = 0x01;
+const byte FRAME_HEADER_2 = 0x02;
+const byte FRAME_HEADER_3 = 0x03;
 unsigned long frame;
 int row;
 
@@ -63,12 +63,6 @@ void getFrame() {
   pixels = 0;
   while (row < ROWS) {
     byte colors[3];
-    /*
-    Serial.print("getting pixel r=");
-    Serial.print(row);
-    Serial.print(",c=");
-    Serial.print(pixels);
-    */
     for (int colorIdx = 0; colorIdx < 3; colorIdx++) {
       while (!getNextByte(&(colors[colorIdx])));
     }
@@ -81,10 +75,14 @@ void getFrame() {
       pixels = 0;
     }
   }
+  #ifdef _DEBUG
   Serial.print("END OF FRAME: ");
   Serial.println(frame++);
+  #endif
   if (frame > 1000) {
+    #ifdef _DEBUG
     Serial.println("Frame counter reset");
+    #endif
     frame = 0;
   }
   row = 0;
@@ -132,19 +130,38 @@ int countUpPanel2(const int x, const int y) {
     - (y - PANEL_HEIGHT);
 }
 
-bool syncToFrame() {
+void waitForByte(byte syncByte) {
+  int f=0;
   byte b = ' ';
-  while ((!getNextByte(&b)) || b != FRAME_HEADER_1) ;
+  while (b != syncByte) {
+    while (!getNextByte(&b))
+      ;
+    f += 1;
+  }
+  #ifdef _DEBUG
+  Serial.print("Footer: ");
+  Serial.println(f-1);
+  #endif
+}
 
-  while (!getNextByte(&b)) ;
+bool syncToFrame() {
+  byte b;
+  waitForByte(FRAME_HEADER_1);
+  while (!getNextByte(&b))
+    ;
   if (b != FRAME_HEADER_2) {
+    Serial.println("!sync2");
     return false;
   }
-  while (!getNextByte(&b)) ;
+  while (!getNextByte(&b))
+   ;
   if (b != FRAME_HEADER_3) {
+    Serial.println("!sync3");
     return false;
   }
+  #ifdef _DEBUG
   Serial.println("sync");
+  #endif
   return true;
 }
 
