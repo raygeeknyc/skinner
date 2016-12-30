@@ -29,6 +29,7 @@ cv2.namedWindow("Original")
 cv2.namedWindow("Cropped")
 cv2.namedWindow("Downsampled")
 cv2.namedWindow("Equalized")
+cv2.namedWindow("Contrast")
 
 _displayAspectRatio = displayHeight / displayWidth
 print "aspect ratio %f" % _displayAspectRatio
@@ -45,6 +46,11 @@ downsampleYFactor = displayHeight / _height
 print "Crop to (%d,%d)=%d:(%d,%d)=%d" % (_xMin,_xMax,(_xMax-_xMin),_yMin,_yMax,(_yMax-_yMin))
 print "Scaling by (x,y) %f, %f" % (downsampleXFactor, downsampleYFactor)
 print "Scales to (%d,%d)" % (_width*downsampleXFactor,_height*downsampleYFactor)
+
+def equalize_brightness(img):
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    img[:,:,2] = cv2.equalizeHist(img[:,:,2])
+    return img
 
 def equalize_hist(img):
     for c in xrange(0, 2):
@@ -65,11 +71,14 @@ try:
 		cropImg = img[_yMin:_yMax,_xMin:_xMax]
 		smallImg = cv2.resize(cropImg, (0,0), fx=downsampleXFactor, fy=downsampleYFactor) 
 		equalizedImg = numpy.copy(cropImg)
+		contrastImg = numpy.copy(cropImg)
 		equalize_hist(equalizedImg)
+		equalize_brightness(contrastImg)
 		cv2.imshow("Original", img)
 		cv2.imshow("Cropped", cropImg)
 		cv2.imshow("Downsampled", smallImg)
 		cv2.imshow("Equalized", equalizedImg)
+		cv2.imshow("Contrast", contrastImg)
 		key = cv2.waitKey(1)
 except KeyboardInterrupt as e:
 	print "Interrupted"

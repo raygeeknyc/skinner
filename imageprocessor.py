@@ -59,6 +59,11 @@ def equalize_hist(img):
        img[:,:,c] = cv2.equalizeHist(img[:,:,c])
     return img
 
+def equalize_brightness(img):
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    img[:,:,2] = cv2.equalizeHist(img[:,:,2])
+    return img
+    
 if _DEBUG:
 	cv2.namedWindow("Original")
 	cv2.namedWindow("Cropped")
