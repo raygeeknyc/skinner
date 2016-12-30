@@ -1,3 +1,4 @@
+import numpy
 import cv2
 import time
 
@@ -27,6 +28,7 @@ print "target resolution is %d,%d" % (displayWidth, displayHeight)
 cv2.namedWindow("Original")
 cv2.namedWindow("Cropped")
 cv2.namedWindow("Downsampled")
+cv2.namedWindow("Equalized")
 
 _displayAspectRatio = displayHeight / displayWidth
 print "aspect ratio %f" % _displayAspectRatio
@@ -44,6 +46,11 @@ print "Crop to (%d,%d)=%d:(%d,%d)=%d" % (_xMin,_xMax,(_xMax-_xMin),_yMin,_yMax,(
 print "Scaling by (x,y) %f, %f" % (downsampleXFactor, downsampleYFactor)
 print "Scales to (%d,%d)" % (_width*downsampleXFactor,_height*downsampleYFactor)
 
+def equalize_hist(img):
+    for c in xrange(0, 2):
+       img[:,:,c] = cv2.equalizeHist(img[:,:,c])
+    return img
+
 frameTimer = time.time() + frameTimerDuration
 frameCounter = 0
 try:
@@ -56,14 +63,13 @@ try:
 			frameCounter = 0
 			frameTimer = time.time() + frameTimerDuration
 		cropImg = img[_yMin:_yMax,_xMin:_xMax]
-		small = cv2.resize(cropImg, (0,0), fx=downsampleXFactor, fy=downsampleYFactor) 
+		smallImg = cv2.resize(cropImg, (0,0), fx=downsampleXFactor, fy=downsampleYFactor) 
+		equalizedImg = numpy.copy(cropImg)
+		equalize_hist(equalizedImg)
 		cv2.imshow("Original", img)
 		cv2.imshow("Cropped", cropImg)
-		cv2.imshow("Downsampled", small)
-		for row in small:
-			for cell in row:
-				pixel = cell
-				#print "(%d,%d,%d)" % (cell[0], cell[1], cell[2])
+		cv2.imshow("Downsampled", smallImg)
+		cv2.imshow("Equalized", equalizedImg)
 		key = cv2.waitKey(1)
 except KeyboardInterrupt as e:
 	print "Interrupted"

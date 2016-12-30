@@ -54,6 +54,11 @@ stream = camera.capture_continuous(cap, format="bgr", use_video_port=True)
 print "input resolution is %d,%d" % resolution
 print "target resolution is %d,%d" % (displayWidth, displayHeight)
 
+def equalize_hist(img):
+    for c in xrange(0, 2):
+       img[:,:,c] = cv2.equalizeHist(img[:,:,c])
+    return img
+
 if _DEBUG:
 	cv2.namedWindow("Original")
 	cv2.namedWindow("Cropped")
@@ -120,6 +125,7 @@ try:
                         frameTimer = time.time() + frameTimerDuration
                 cropImg = img[_yMin:_yMax,_xMin:_xMax] # this is all there is to cropping
                 small = cv2.resize(img, (0,0), fx=downsampleXFactor, fy=downsampleYFactor)
+		equalize_hist(small)
 
 		writeFrameHeader();
 		writeFrame(small);
