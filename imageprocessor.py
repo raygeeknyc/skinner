@@ -128,8 +128,7 @@ def writeFrame(image):
 def writePixels(pixelData):
 	if _DEBUG:
 		for pixel in pixelData:
-			BG
-			RPixel = bytearray(pixel.tostring())
+			bgrPixel = bytearray(pixel.tostring())
 			print "pixel(%d): (%d,%d,%d)" % (len(bgrPixel), bgrPixel[0],bgrPixel[1],bgrPixel[2])
 	bgrValues = bytearray(pixelData.tostring())
 	written = ser.write(bgrValues)
