@@ -60,10 +60,11 @@ def equalize_hist(img):
     return img
 
 def equalize_brightness(img):
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    img[:,:,2] = cv2.equalizeHist(img[:,:,2])
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    hsv[:,:,2] = cv2.equalizeHist(hsv[:,:,2])
+    img = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
     return img
-    
+
 if _DEBUG:
 	cv2.namedWindow("Original")
 	cv2.namedWindow("Cropped")
@@ -130,7 +131,7 @@ try:
                         frameTimer = time.time() + frameTimerDuration
                 cropImg = img[_yMin:_yMax,_xMin:_xMax] # this is all there is to cropping
                 small = cv2.resize(img, (0,0), fx=downsampleXFactor, fy=downsampleYFactor)
-		equalize_hist(small)
+		small = equalize_brightness(small)
 
 		writeFrameHeader();
 		writeFrame(small);

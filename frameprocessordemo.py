@@ -48,8 +48,9 @@ print "Scaling by (x,y) %f, %f" % (downsampleXFactor, downsampleYFactor)
 print "Scales to (%d,%d)" % (_width*downsampleXFactor,_height*downsampleYFactor)
 
 def equalize_brightness(img):
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    img[:,:,2] = cv2.equalizeHist(img[:,:,2])
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    hsv[:,:,2] = cv2.equalizeHist(hsv[:,:,2])
+    img = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR) 
     return img
 
 def equalize_hist(img):
@@ -73,7 +74,7 @@ try:
 		equalizedImg = numpy.copy(cropImg)
 		contrastImg = numpy.copy(cropImg)
 		equalize_hist(equalizedImg)
-		equalize_brightness(contrastImg)
+		contrastImg = equalize_brightness(contrastImg)
 		cv2.imshow("Original", img)
 		cv2.imshow("Cropped", cropImg)
 		cv2.imshow("Downsampled", smallImg)
