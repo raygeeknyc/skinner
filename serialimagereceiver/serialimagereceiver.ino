@@ -71,7 +71,7 @@ void getFrame() {
     for (int colorIdx = 0; colorIdx < 3; colorIdx++) {
       while (!getNextByte(&(colors[colorIdx])));
     }
-    // Pixel data from the imageprocessor is GRB so rearrange the colors here
+    // Pixel data from the imageprocessor is RGB but even tho our FASTLED color order is RGB we need to rearrange them
     leds[getPixelForCoord(pixels, row)] = CRGB( colors[1], colors[0], colors[2]);
     pixels += 1;
 
