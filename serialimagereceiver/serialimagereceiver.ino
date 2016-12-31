@@ -25,6 +25,10 @@ int row;
 #define COLOR_ORDER RGB
 #define CHIPSET     WS2811
 #define BRIGHTNESS 32
+//#define LIGHT_TEMPERATURE WarmFluorescent
+//#define LIGHT_TEMPERATURE Halogen
+//#define LIGHT_TEMPERATURE FullSpectrumFluorescent
+#define LIGHT_TEMPERATURE CoolWhiteFluorescent
 
 void setup() {
   Serial.begin(9600);
@@ -43,8 +47,9 @@ void setup() {
   row = 0;
   recvd = false;
 
-  FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalSMD5050);
-  FastLED.setBrightness( BRIGHTNESS );
+  FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalPixelString);
+  FastLED.setBrightness(BRIGHTNESS);
+  FastLED.setTemperature(LIGHT_TEMPERATURE);
   FastLED.show();
 
   Serial.println("/setup");
@@ -66,8 +71,8 @@ void getFrame() {
     for (int colorIdx = 0; colorIdx < 3; colorIdx++) {
       while (!getNextByte(&(colors[colorIdx])));
     }
-    // Pixel data from the imageoprocessor is BGR so rearrange the colors here
-    leds[getPixelForCoord(pixels, row)] = CRGB( colors[2], colors[1], colors[0]);
+    // Pixel data from the imageprocessor is GRB so rearrange the colors here
+    leds[getPixelForCoord(pixels, row)] = CRGB( colors[1], colors[0], colors[2]);
     pixels += 1;
 
     if (!(pixels % COLUMNS)) {

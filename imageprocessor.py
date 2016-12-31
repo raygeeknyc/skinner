@@ -60,7 +60,7 @@ camera.resolution = resolution
 if framerate > 0:
         camera.framerate=framerate
 cap = PiRGBArray(camera)
-stream = camera.capture_continuous(cap, format="bgr", use_video_port=True)
+stream = camera.capture_continuous(cap, format="rgb", use_video_port=True)
 
 print "input resolution is %d,%d" % resolution
 print "target resolution is %d,%d" % (displayWidth, displayHeight)
@@ -72,10 +72,10 @@ def equalize_hist(img):
     return equalized
 
 def equalize_brightness(img):
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     hsv[:,:,2] = cv2.equalizeHist(hsv[:,:,2])
-    bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
-    return bgr
+    rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
+    return rgb
 
 if _DEBUG:
 	cv2.namedWindow("Original")
@@ -128,12 +128,12 @@ def writeFrame(image):
 def writePixels(pixelData):
 	if _DEBUG:
 		for pixel in pixelData:
-			bgrPixel = bytearray(pixel.tostring())
-			print "pixel(%d): (%d,%d,%d)" % (len(bgrPixel), bgrPixel[0],bgrPixel[1],bgrPixel[2])
-	bgrValues = bytearray(pixelData.tostring())
-	written = ser.write(bgrValues)
-	if written != len(bgrValues):
-		print "error - wrote %d but only sent %d" % (len(bgrValues), written)
+			rgbPixel = bytearray(pixel.tostring())
+			print "pixel(%d): (%d,%d,%d)" % (len(rgbPixel), rgbPixel[0],rgbPixel[1],rgbPixel[2])
+	rgbValues = bytearray(pixelData.tostring())
+	written = ser.write(rgbValues)
+	if written != len(rgbValues):
+		print "error - wrote %d but only sent %d" % (len(rgbValues), written)
 
 frameTimer = time.time() + frameTimerDuration
 frameCounter = 0
