@@ -4,7 +4,8 @@
 #define PANEL_WIDTH 32
 
 #define HWSERIAL Serial2
-#define LEDPIN 13
+#define ACTIVITY_LED_PIN 13
+
 int pixels;
 bool recvd;
 const int ROWS = PANEL_HEIGHT * 2;
@@ -14,17 +15,26 @@ const int  COLUMNS = PANEL_WIDTH;
 CRGB leds_plus_safety_pixel[ NUM_LEDS];
 CRGB* const leds( leds_plus_safety_pixel);
 
-const byte FRAME_HEADER_1 = 0xF0;
-const byte FRAME_HEADER_2 = 0x00;
-const byte FRAME_HEADER_3 = 0x0F;
+const byte FRAME_HEADER_1 = 0x01;
+const byte FRAME_HEADER_2 = 0x02;
+const byte FRAME_HEADER_3 = 0x03;
 unsigned long frame;
 int row;
 
-
-#define LED_PIN  3
+#define LIGHT_TEMPERATURE_JUMPER_PIN 14
+#define BRIGHTNESS_JUMPER_PIN 15
+#define DISPLAY_LED_PIN  3
 #define COLOR_ORDER RGB
 #define CHIPSET     WS2811
-#define BRIGHTNESS 32
+#define BRIGHTNESS_DIM 16
+#define BRIGHTNESS_HIGH 64
+boolean brightness_switch;
+boolean temperature_switch;
+
+#define LIGHT_TEMPERATURE_WARM WarmFluorescent
+//#define LIGHT_TEMPERATURE Halogen
+//#define LIGHT_TEMPERATURE FullSpectrumFluorescent
+#define LIGHT_TEMPERATURE_COOL CoolWhiteFluorescent
 
 void setup() {
   Serial.begin(9600);
@@ -32,19 +42,21 @@ void setup() {
 
   HWSERIAL.begin(230400);
   HWSERIAL.setTimeout(1);
-  pinMode(LEDPIN, OUTPUT); 
+  pinMode(ACTIVITY_LED_PIN, OUTPUT); 
+  pinMode(BRIGHTNESS_JUMPER_PIN, INPUT_PULLUP);
+  pinMode(LIGHT_TEMPERATURE_JUMPER_PIN, INPUT_PULLUP);
 
-  
-  digitalWrite(LEDPIN, HIGH);
+  digitalWrite(ACTIVITY_LED_PIN, HIGH);
   delay(500);
-  digitalWrite(LEDPIN, LOW);
+  digitalWrite(ACTIVITY_LED_PIN, LOW);
   pixels = 0;
   frame = 0;
   row = 0;
   recvd = false;
 
-  FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalSMD5050);
-  FastLED.setBrightness( BRIGHTNESS );
+  FastLED.addLeds<CHIPSET, DISPLAY_LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+  FastLED.setCorrection(TypicalPixelString);
+  setLEDLighting();
   FastLED.show();
 
   Serial.println("/setup");
@@ -63,16 +75,10 @@ void getFrame() {
   pixels = 0;
   while (row < ROWS) {
     byte colors[3];
-    /*
-    Serial.print("getting pixel r=");
-    Serial.print(row);
-    Serial.print(",c=");
-    Serial.print(pixels);
-    */
     for (int colorIdx = 0; colorIdx < 3; colorIdx++) {
       while (!getNextByte(&(colors[colorIdx])));
     }
-    // Pixel data from the imageoprocessor is GRB so rearrange the colors here
+    // Pixel data from the imageprocessor is RGB but even tho our FASTLED color order is RGB we need to rearrange them
     leds[getPixelForCoord(pixels, row)] = CRGB( colors[1], colors[0], colors[2]);
     pixels += 1;
 
@@ -81,10 +87,14 @@ void getFrame() {
       pixels = 0;
     }
   }
+  #ifdef _DEBUG
   Serial.print("END OF FRAME: ");
   Serial.println(frame++);
+  #endif
   if (frame > 1000) {
+    #ifdef _DEBUG
     Serial.println("Frame counter reset");
+    #endif
     frame = 0;
   }
   row = 0;
@@ -132,27 +142,70 @@ int countUpPanel2(const int x, const int y) {
     - (y - PANEL_HEIGHT);
 }
 
-bool syncToFrame() {
+void waitForByte(byte syncByte) {
+  int f=0;
   byte b = ' ';
-  while ((!getNextByte(&b)) || b != FRAME_HEADER_1) ;
+  while (b != syncByte) {
+    while (!getNextByte(&b))
+      ;
+    f += 1;
+  }
+  #ifdef _DEBUG
+  Serial.print("Footer: ");
+  Serial.println(f-1);
+  #endif
+}
 
-  while (!getNextByte(&b)) ;
+bool syncToFrame() {
+  byte b;
+  waitForByte(FRAME_HEADER_1);
+  while (!getNextByte(&b))
+    ;
   if (b != FRAME_HEADER_2) {
+    Serial.println("!sync2");
     return false;
   }
-  while (!getNextByte(&b)) ;
+  while (!getNextByte(&b))
+   ;
   if (b != FRAME_HEADER_3) {
+    Serial.println("!sync3");
     return false;
   }
+  #ifdef _DEBUG
   Serial.println("sync");
+  #endif
   return true;
 }
 
+boolean isLightingSettingChanged() {
+  boolean changed = false;
+
+  if (brightness_switch != digitalRead(BRIGHTNESS_JUMPER_PIN)) {
+    brightness_switch = digitalRead(BRIGHTNESS_JUMPER_PIN);
+    changed = true;
+  }
+  if (temperature_switch != digitalRead(LIGHT_TEMPERATURE_JUMPER_PIN)) {
+    temperature_switch = digitalRead(LIGHT_TEMPERATURE_JUMPER_PIN);
+    changed = true;
+  }
+
+  return changed;
+}
+
+void setLEDLighting() {
+  FastLED.clear();
+  FastLED.setBrightness((digitalRead(BRIGHTNESS_JUMPER_PIN) == HIGH)?BRIGHTNESS_HIGH:BRIGHTNESS_DIM);
+  FastLED.setTemperature((digitalRead(LIGHT_TEMPERATURE_JUMPER_PIN) == HIGH)?LIGHT_TEMPERATURE_WARM:LIGHT_TEMPERATURE_COOL);
+}
+
 void loop() {
-  digitalWrite(LEDPIN, LOW);
+  digitalWrite(ACTIVITY_LED_PIN, LOW);
   while (!syncToFrame()) Serial.println("Failed to Sync");
-  digitalWrite(LEDPIN, HIGH);
+  digitalWrite(ACTIVITY_LED_PIN, HIGH);
+  if (isLightingSettingChanged()) {
+    setLEDLighting();
+  }
   getFrame();
-  digitalWrite(LEDPIN, LOW);
+  digitalWrite(ACTIVITY_LED_PIN, LOW);
   FastLED.show();
 }
