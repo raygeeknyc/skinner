@@ -10,7 +10,24 @@ s = 5;
 d = 12;
 c = 9;
 r = 6;
+o = 30;
+p = 65;
+r2 = 17;
+q = 6;
+b = 4.5;
 union() {
+    /* This makes the top off center holder for a Raspberry Pi 0 with a lip and a slot for the ribbon cable and a channel for GPIO & power cables.
+    */
+    translate([-1*(o+t1),((w+2*t2)/4)-(p+2*t1)/2,0]) {
+        difference() {
+            cube([o+t1, p+2*t1, n+t1]);
+            translate([t1, t1, t1]) cube([o, p, n]);
+            translate([t1+q, t1+p, t1]) cube([r2, t1, t2]);
+            translate([(o+t1)/2, 0, t1]) {
+                rotate([0, 90, 90]) cylinder(h=t1*2, d=b);
+            }
+        }
+    }
     difference() {
         /* This makes 2 hook shaped holders at the edges of the frame top.
         */
