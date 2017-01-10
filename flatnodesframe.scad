@@ -18,6 +18,7 @@ b = 4.5;
 x = 57;
 y = 84;
 z = 30;
+g = 20;
 union() {
     /* This makes the bottom off center holder for a Teensy 3.2 with a lip, a channel for imageprocessor cables and part of a channel for panel to Teensy cables.
     */
@@ -79,11 +80,11 @@ union() {
     
         translate([t1, t2, t1]) cube([h, w, n]);
         translate([t1+m, t2, t1]) cube([h-t2-m, w, n+t2]);
-        translate([(h-s)/2, t1, 0]) cube([s, w-2*t1, t1]);
+        translate([h-g, t2+z-t1, 0]) cube([s, w-2*(z-t1), t1]);
     
         translate([t1+h+t2, t2, t1]) cube([h, w, n]);
         translate([t1+h+t2+m, t2, t1]) cube([h-2*m, w, n+t2]);
-        translate([h+(h-s)/2, t1, 0]) cube([s, w-2*t1, t1]);
+        translate([t1+h+g,  t2+z-t1, 0]) cube([s, w-2*(z-t1), t1]);
         
         /* This adds part of the channel for the panels to Teensy cables.
         */
