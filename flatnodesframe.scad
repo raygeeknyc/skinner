@@ -75,7 +75,7 @@ union() {
         }
     }
     /* This makes the frame that holds 2 panels with slight lips on the topmost and bottommost horizontal edges and slots for cables out the back.
-    There are 3 channels to be used for braces after the model has been cut into 4 sections for printing.
+    There are 2 channels to be used for braces after the model has been cut into 2 sections for printing.
     */
     difference() {
         cube([2*h+t2+2*t1, w+2*t2, n+t3+t2]);
@@ -83,13 +83,12 @@ union() {
         translate([t1, t2, t3]) cube([h, w, n]);
         translate([t1+m, t2, t3]) cube([h-t2-m, w, n+t2]);
         translate([h-g-t2-s/2, t2+z-t1, 0]) cube([s, w-2*(z-t1), t3]);
-    
+ 
         translate([t1+h+t2, t2, t3]) cube([h, w, n]);
         translate([t1+h+t2+m, t2, t3]) cube([h-2*m, w, n+t2]);
         translate([t1+h+t2+s/2+g,  t2+z-t1, 0]) cube([s, w-2*(z-t1), t3]);
         translate([t1+((h-g)/2)-(l2/2), (w/2)-(l1/2),t2]) cube([l2, l1, t3-t2]);
-        translate([t1+h+g+t2+s*1.5+t2, (t1+w/4), t2]) cube([l1, l2, t3-t2]);
-       translate([t1+h+g+t2+s*1.5+t2, (t1+w/4)*3-l2, t2]) cube([l1, l2, t3-t2]);
+       translate([t1+h+t2+s/2+g+l2, (w/2)-(l1/2),t2]) cube([l2, l1, t3-t2]);
         /* This adds part of the channel for the panels to Teensy cables.
         */
         translate([2*h+2*t1+t2, w+2*t2-z-(y+2*t1),0]) {
