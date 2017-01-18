@@ -23,6 +23,7 @@ g = 20;
 e = 6;
 l1=40;
 l2=10;
+p2=10; // Offset for wire slots
 union() {
     /* This makes the bottom off center holder for a Teensy 3.2 with a lip, a channel for imageprocessor cables and part of a channel for panel to Teensy cables.
     */
@@ -81,12 +82,15 @@ union() {
         cube([2*h+t2+2*t1, w+2*t2, n+t3+t2]);
     
         translate([t1, t2, t3]) cube([h, w, n]);
+        
         translate([t1+m, t2, t3]) cube([h-t2-m, w, n+t2]);
-        translate([h-g-t2-s/2, t2+z-t1, 0]) cube([s, w-2*(z-t1), t3]);
+        translate([h-t2-s/2-p2, t2+z-t1, 0]) cube([s, w-2*(z-t1), t3]);
+        translate([t1+h+t2+s/2+p2,  t2+z-t1, 0]) cube([s, w-2*(z-t1), t3]);
  
         translate([t1+h+t2, t2, t3]) cube([h, w, n]);
+        
         translate([t1+h+t2+m, t2, t3]) cube([h-2*m, w, n+t2]);
-        translate([t1+h+t2+s/2+g,  t2+z-t1, 0]) cube([s, w-2*(z-t1), t3]);
+        // These are the channels for braces
         translate([t1+((h-g)/2)-(l2/2), (w/2)-(l1/2),t2]) cube([l2, l1, t3-t2]);
        translate([t1+h+t2+s/2+g+l2, (w/2)-(l1/2),t2]) cube([l2, l1, t3-t2]);
         /* This adds part of the channel for the panels to Teensy cables.
