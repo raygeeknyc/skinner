@@ -7,7 +7,7 @@ m = 2;
 t1 = 3;
 t2 = 2;
 t3 = 5;
-s = 5;
+s = 7;
 d = 12;
 c = 9;
 r = 6;
@@ -23,7 +23,7 @@ g = 20;
 e = 6;
 l1=40;
 l2=10;
-p2=10; // Offset for wire slots
+p2=12.5; // Offset for wire slots
 union() {
     /* This makes the bottom off center holder for a Teensy 3.2 with a lip, a channel for imageprocessor cables and part of a channel for panel to Teensy cables.
     */
