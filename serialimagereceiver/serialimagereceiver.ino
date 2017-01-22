@@ -4,7 +4,8 @@
 #define PANEL_WIDTH 32
 
 #define HWSERIAL Serial2
-#define LEDPIN 13
+#define ACTIVITY_LED_PIN 13
+
 int pixels;
 bool recvd;
 const int ROWS = PANEL_HEIGHT * 2;
@@ -20,15 +21,18 @@ const byte FRAME_HEADER_3 = 0x03;
 unsigned long frame;
 int row;
 
-
-#define LED_PIN  3
+#define LIGHT_TEMPERATURE_JUMPER_PIN 14
+#define BRIGHTNESS_JUMPER_PIN 15
+#define DISPLAY_LED_PIN  3
 #define COLOR_ORDER RGB
 #define CHIPSET     WS2811
-#define BRIGHTNESS 32
-//#define LIGHT_TEMPERATURE WarmFluorescent
+#define BRIGHTNESS_DIM 16
+#define BRIGHTNESS_HIGH 64
+
+#define LIGHT_TEMPERATURE_WARM WarmFluorescent
 //#define LIGHT_TEMPERATURE Halogen
 //#define LIGHT_TEMPERATURE FullSpectrumFluorescent
-#define LIGHT_TEMPERATURE CoolWhiteFluorescent
+#define LIGHT_TEMPERATURE_COOL CoolWhiteFluorescent
 
 void setup() {
   Serial.begin(9600);
@@ -36,20 +40,21 @@ void setup() {
 
   HWSERIAL.begin(230400);
   HWSERIAL.setTimeout(1);
-  pinMode(LEDPIN, OUTPUT); 
+  pinMode(ACTIVITY_LED_PIN, OUTPUT); 
+  pinMode(BRIGHTNESS_JUMPER_PIN, INPUT_PULLUP);
+  pinMode(LIGHT_TEMPERATURE_JUMPER_PIN, INPUT_PULLUP);
 
-  
-  digitalWrite(LEDPIN, HIGH);
+  digitalWrite(ACTIVITY_LED_PIN, HIGH);
   delay(500);
-  digitalWrite(LEDPIN, LOW);
+  digitalWrite(ACTIVITY_LED_PIN, LOW);
   pixels = 0;
   frame = 0;
   row = 0;
   recvd = false;
 
-  FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalPixelString);
-  FastLED.setBrightness(BRIGHTNESS);
-  FastLED.setTemperature(LIGHT_TEMPERATURE);
+  FastLED.addLeds<CHIPSET, DISPLAY_LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalPixelString);
+  FastLED.setBrightness((BRIGHTNESS_JUMPER_PIN == HIGH)?BRIGHTNESS_HIGH:BRIGHTNESS_DIM);
+  FastLED.setTemperature((LIGHT_TEMPERATURE_JUMPER_PIN == HIGH)?LIGHT_TEMPERATURE_WARM:LIGHT_TEMPERATURE_COOL);
   FastLED.show();
 
   Serial.println("/setup");
@@ -171,10 +176,10 @@ bool syncToFrame() {
 }
 
 void loop() {
-  digitalWrite(LEDPIN, LOW);
+  digitalWrite(ACTIVITY_LED_PIN, LOW);
   while (!syncToFrame()) Serial.println("Failed to Sync");
-  digitalWrite(LEDPIN, HIGH);
+  digitalWrite(ACTIVITY_LED_PIN, HIGH);
   getFrame();
-  digitalWrite(LEDPIN, LOW);
+  digitalWrite(ACTIVITY_LED_PIN, LOW);
   FastLED.show();
 }
