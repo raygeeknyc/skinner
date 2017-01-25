@@ -28,6 +28,8 @@ int row;
 #define CHIPSET     WS2811
 #define BRIGHTNESS_DIM 16
 #define BRIGHTNESS_HIGH 64
+boolean brightness_switch;
+boolean temperature_switch;
 
 #define LIGHT_TEMPERATURE_WARM WarmFluorescent
 //#define LIGHT_TEMPERATURE Halogen
@@ -52,9 +54,9 @@ void setup() {
   row = 0;
   recvd = false;
 
-  FastLED.addLeds<CHIPSET, DISPLAY_LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalPixelString);
-  FastLED.setBrightness((BRIGHTNESS_JUMPER_PIN == HIGH)?BRIGHTNESS_HIGH:BRIGHTNESS_DIM);
-  FastLED.setTemperature((LIGHT_TEMPERATURE_JUMPER_PIN == HIGH)?LIGHT_TEMPERATURE_WARM:LIGHT_TEMPERATURE_COOL);
+  FastLED.addLeds<CHIPSET, DISPLAY_LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+  FastLED.setCorrection(TypicalPixelString);
+  setLEDLighting();
   FastLED.show();
 
   Serial.println("/setup");
@@ -175,10 +177,34 @@ bool syncToFrame() {
   return true;
 }
 
+boolean isLightingSettingChanged() {
+  boolean changed = false;
+
+  if (brightness_switch != digitalRead(BRIGHTNESS_JUMPER_PIN)) {
+    brightness_switch = digitalRead(BRIGHTNESS_JUMPER_PIN);
+    changed = true;
+  }
+  if (temperature_switch != digitalRead(LIGHT_TEMPERATURE_JUMPER_PIN)) {
+    temperature_switch = digitalRead(LIGHT_TEMPERATURE_JUMPER_PIN);
+    changed = true;
+  }
+
+  return changed;
+}
+
+void setLEDLighting() {
+  FastLED.clear();
+  FastLED.setBrightness((digitalRead(BRIGHTNESS_JUMPER_PIN) == HIGH)?BRIGHTNESS_HIGH:BRIGHTNESS_DIM);
+  FastLED.setTemperature((digitalRead(LIGHT_TEMPERATURE_JUMPER_PIN) == HIGH)?LIGHT_TEMPERATURE_WARM:LIGHT_TEMPERATURE_COOL);
+}
+
 void loop() {
   digitalWrite(ACTIVITY_LED_PIN, LOW);
   while (!syncToFrame()) Serial.println("Failed to Sync");
   digitalWrite(ACTIVITY_LED_PIN, HIGH);
+  if (isLightingSettingChanged()) {
+    setLEDLighting();
+  }
   getFrame();
   digitalWrite(ACTIVITY_LED_PIN, LOW);
   FastLED.show();
