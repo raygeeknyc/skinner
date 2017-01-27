@@ -32,9 +32,10 @@ int row;
 boolean brightness_switch;
 boolean temperature_switch;
 
-#define LIGHT_TEMPERATURE_WARM WarmFluorescent
+//#define LIGHT_TEMPERATURE WarmFluorescent
 //#define LIGHT_TEMPERATURE Halogen
 //#define LIGHT_TEMPERATURE FullSpectrumFluorescent
+#define LIGHT_TEMPERATURE_WARM Tungsten100W
 #define LIGHT_TEMPERATURE_COOL CoolWhiteFluorescent
 
 void setup() {
