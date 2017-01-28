@@ -21,7 +21,7 @@ const byte FRAME_HEADER_3 = 0x03;
 unsigned long frame;
 int row;
 
-#define LED_SETTING_CLEAR_DURATION_MS 500
+#define LED_SETTING_BLINK_DURATION_MS 1000
 #define LIGHT_TEMPERATURE_JUMPER_PIN 14
 #define BRIGHTNESS_JUMPER_PIN 15
 #define DISPLAY_LED_PIN  3
@@ -195,8 +195,9 @@ boolean isLightingSettingChanged() {
 }
 
 void setLEDLighting() {
-  FastLED.setBrightness(0);
-  delay(LED_SETTING_CLEAR_DURATION_MS);
+  digitalWrite(ACTIVITY_LED_PIN, HIGH);
+  delay(LED_SETTING_BLINK_DURATION_MS);
+  digitalWrite(ACTIVITY_LED_PIN, LOW);
   FastLED.setBrightness((digitalRead(BRIGHTNESS_JUMPER_PIN) == HIGH)?BRIGHTNESS_HIGH:BRIGHTNESS_DIM);
   FastLED.setTemperature((digitalRead(LIGHT_TEMPERATURE_JUMPER_PIN) == HIGH)?LIGHT_TEMPERATURE_WARM:LIGHT_TEMPERATURE_COOL);
   FastLED.clear();
