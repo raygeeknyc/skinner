@@ -195,10 +195,11 @@ boolean isLightingSettingChanged() {
 }
 
 void setLEDLighting() {
+  FastLED.setBrightness(0);
+  delay(LED_SETTING_CLEAR_DURATION_MS);
   FastLED.setBrightness((digitalRead(BRIGHTNESS_JUMPER_PIN) == HIGH)?BRIGHTNESS_HIGH:BRIGHTNESS_DIM);
   FastLED.setTemperature((digitalRead(LIGHT_TEMPERATURE_JUMPER_PIN) == HIGH)?LIGHT_TEMPERATURE_WARM:LIGHT_TEMPERATURE_COOL);
   FastLED.clear();
-  delay(LED_SETTING_CLEAR_DURATION_MS);
 }
 
 void loop() {
