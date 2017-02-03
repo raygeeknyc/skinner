@@ -15,8 +15,8 @@ displayWidth = 32.0
 displayHeight = 16.0
 
 # These are the horizontal margins of the input feed to crop, everything else scales to fit these
-xLeft = 0
-xRight = 0
+xLeft = 150
+xRight = 150
 
 # Open cam, decode image, show in window
 cap = cv2.VideoCapture(0) # use 1 or 2 or ... for other camera
@@ -35,8 +35,8 @@ _displayAspectRatio = displayHeight / displayWidth
 print "aspect ratio %f" % _displayAspectRatio
 _xMin = xLeft
 _xMax = resolution[0]-xRight
-_height = int(_displayAspectRatio * resolution[0])
 _width = _xMax+1 - _xMin
+_height = int(_displayAspectRatio * _width)
 _yMin = int((resolution[1] - _height)/2)
 _yMax = _yMin + _height
 print "min = %d, max = %d, height = %d" % (_yMin, _yMax, _height)

@@ -41,8 +41,8 @@ displayHeight = 16.0
 FOOTER_LENGTH = 330
 
 # These are the horizontal margins of the input feed to crop, everything else scales to fit these
-xLeft = 100
-xRight = 100
+xLeft = 50
+xRight = 50
 
 # These are the bytes of our frame header, used to sync frame boundaries on the receiver
 FRAME_HEADER_1 = chr(int('0x01',16))
@@ -86,8 +86,8 @@ _displayAspectRatio = displayHeight / displayWidth
 print "aspect ratio %f" % _displayAspectRatio
 _xMin = xLeft
 _xMax = resolution[0]-xRight
-_height = int(_displayAspectRatio * resolution[0])
 _width = _xMax+1 - _xMin
+_height = int(_displayAspectRatio * _width)
 _yMin = int((resolution[1] - _height)/2)
 _yMax = _yMin + _height
 print "min = %d, max = %d, height = %d" % (_yMin, _yMax, _height)

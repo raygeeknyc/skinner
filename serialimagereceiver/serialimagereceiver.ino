@@ -21,8 +21,9 @@ const byte FRAME_HEADER_3 = 0x03;
 unsigned long frame;
 int row;
 
+#define LED_SETTING_BLINK_DURATION_MS 1000
 #define LIGHT_TEMPERATURE_JUMPER_PIN 14
-#define BRIGHTNESS_JUMPER_PIN 15
+#define BRIGHTNESS_JUMPER_PIN 16
 #define DISPLAY_LED_PIN  3
 #define COLOR_ORDER RGB
 #define CHIPSET     WS2811
@@ -31,9 +32,10 @@ int row;
 boolean brightness_switch;
 boolean temperature_switch;
 
-#define LIGHT_TEMPERATURE_WARM WarmFluorescent
+//#define LIGHT_TEMPERATURE WarmFluorescent
 //#define LIGHT_TEMPERATURE Halogen
 //#define LIGHT_TEMPERATURE FullSpectrumFluorescent
+#define LIGHT_TEMPERATURE_WARM Tungsten100W
 #define LIGHT_TEMPERATURE_COOL CoolWhiteFluorescent
 
 void setup() {
@@ -193,9 +195,12 @@ boolean isLightingSettingChanged() {
 }
 
 void setLEDLighting() {
-  FastLED.clear();
+  digitalWrite(ACTIVITY_LED_PIN, HIGH);
+  delay(LED_SETTING_BLINK_DURATION_MS);
+  digitalWrite(ACTIVITY_LED_PIN, LOW);
   FastLED.setBrightness((digitalRead(BRIGHTNESS_JUMPER_PIN) == HIGH)?BRIGHTNESS_HIGH:BRIGHTNESS_DIM);
   FastLED.setTemperature((digitalRead(LIGHT_TEMPERATURE_JUMPER_PIN) == HIGH)?LIGHT_TEMPERATURE_WARM:LIGHT_TEMPERATURE_COOL);
+  FastLED.clear();
 }
 
 void loop() {
