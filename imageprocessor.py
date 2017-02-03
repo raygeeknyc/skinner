@@ -41,8 +41,8 @@ displayHeight = 16.0
 FOOTER_LENGTH = 330
 
 # These are the horizontal margins of the input feed to crop, everything else scales to fit these
-xLeft = 50
-xRight = 50
+xLeft = 90
+xRight = 90
 
 # These are the bytes of our frame header, used to sync frame boundaries on the receiver
 FRAME_HEADER_1 = chr(int('0x01',16))
