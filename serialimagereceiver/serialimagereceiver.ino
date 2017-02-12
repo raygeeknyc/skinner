@@ -18,8 +18,15 @@ CRGB* const leds( leds_plus_safety_pixel);
 const byte FRAME_HEADER_1 = 0x01;
 const byte FRAME_HEADER_2 = 0x02;
 const byte FRAME_HEADER_3 = 0x03;
+#define FRAME_BRIGHTNESS_LENGTH 5
+
 unsigned long frame;
+int brightness;
+
 int row;
+
+// If the frame header brightness is below this value, dim the display brightness
+#define BRIGHTNESS_THRESHOLD 140
 
 #define LED_SETTING_BLINK_DURATION_MS 1000
 #define LIGHT_TEMPERATURE_JUMPER_PIN 14
@@ -55,6 +62,7 @@ void setup() {
   frame = 0;
   row = 0;
   recvd = false;
+  brightness = 0;
 
   FastLED.addLeds<CHIPSET, DISPLAY_LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
   FastLED.setCorrection(TypicalPixelString);
@@ -158,8 +166,12 @@ void waitForByte(byte syncByte) {
   #endif
 }
 
+// This returns true if a frame header was found
+// and sets the brightness global
 bool syncToFrame() {
   byte b;
+  byte header_brightness[FRAME_BRIGHTNESS_LENGTH];
+
   waitForByte(FRAME_HEADER_1);
   while (!getNextByte(&b))
     ;
@@ -167,12 +179,21 @@ bool syncToFrame() {
     Serial.println("!sync2");
     return false;
   }
+
+  for (int i=0;i<FRAME_BRIGHTNESS_LENGTH;i++) {
+    while (!getNextByte(&b))
+      ;
+    header_brightness[i] = b;
+  }
+
   while (!getNextByte(&b))
-   ;
+    ;
   if (b != FRAME_HEADER_3) {
     Serial.println("!sync3");
     return false;
   }
+  String brightnessString = (char*)header_brightness;
+  brightness = brightnessString.toInt();
   #ifdef _DEBUG
   Serial.println("sync");
   #endif

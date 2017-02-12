@@ -52,6 +52,8 @@ FRAME_HEADER_1 = chr(int('0x01',16))
 FRAME_HEADER_2 = chr(int('0x02',16))
 FRAME_HEADER_3 = chr(int('0x03',16))
 FRAME_FOOTER = chr(int('0x00',16))
+# This is the number of bytes to send as the frame brightness
+HEADER_BRIGHTNESS_LENGTH = 5
 
 # Open serial port at the highest tested standard BAUD rate
 ser = serial.Serial(SERPORT, BAUD, timeout=1)
@@ -77,7 +79,7 @@ def equalize_hist(img):
 def get_brightness(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     averageBrightness = int(cv2.mean(hsv[:,:,2])[0])
-    return bytearray(format(averageBrightness,'05d'))
+    return bytearray(format(averageBrightness,'0' + HEADER_BRIGHTNESS_LENGTH + 'd'))
 
 def equalize_brightness(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
@@ -115,14 +117,14 @@ def writeFrameHeader():
 	if written != 1:
 		print "failed to send header 2"
 		return False
+	written = ser.write(brightness)
+	if written != HEADER_BRIGHTNESS_LENGTH:
+		print "failed to send frame brightness"
+		return False
 	written = ser.write(FRAME_HEADER_3)
 	if written != 1:
 		print "failed to send header 3"
 		return False
-	if written != 1:
-		print "failed to send header 3"
-		return False
-	written = ser.write(brightness)
 	return True
 
 def writeFrameFooter():
