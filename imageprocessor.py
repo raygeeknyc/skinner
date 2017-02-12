@@ -19,6 +19,9 @@ if _DEBUG:
 		print "Equalizing brightness"
 frameTimerDuration = 1
 
+How many frames to capture before recalculating average brightness
+brightnessFrameSampleDuration = 100
+
 # The desired resolution of the Pi camera
 resolution = (320, 240)
 # The desired maximum framerate, 0 for maximum possible throughput
@@ -71,6 +74,11 @@ def equalize_hist(img):
        equalized[:,:,c] = cv2.equalizeHist(equalized[:,:,c])
     return equalized
 
+def get_brightness(img):
+    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+    averageBrightness = cv2.mean(hsv[:,:,2])
+    return bytearray(averageBrightness.tostring())
+    
 def equalize_brightness(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     hsv[:,:,2] = cv2.equalizeHist(hsv[:,:,2])
@@ -111,6 +119,7 @@ def writeFrameHeader():
 	if written != 1:
 		print "failed to send header 3"
 		return False
+	written = ser.write(brightness)
 	return True
 
 def writeFrameFooter():
@@ -139,16 +148,19 @@ frameTimer = time.time() + frameTimerDuration
 frameCounter = 0
 frameTimer = time.time() + frameTimerDuration
 frameCounter = 0
+brightness = get_brightness(img)
 try:
         for frame in stream:
                 img = frame.array
                 cap.truncate(0)
                 frameCounter += 1
+                if frameCounter > brightnessFrameSampleDuration:
+			brightness = get_brightness(img)
                 if _DEBUG and time.time() > frameTimer:
                         print "processed %d frames in %f seconds" % (frameCounter, frameTimerDuration)
                         frameCounter = 0
                         frameTimer = time.time() + frameTimerDuration
-                cropImg = img[_yMin:_yMax,_xMin:_xMax] # this is all there is to cropping
+                cropImg = img[_yMin:_yMax,_xMin:_xMax]
 		if equalize:
 			cropImg = equalize_brightness(cropImg)
                 small = cv2.resize(cropImg, (0,0), fx=downsampleXFactor, fy=downsampleYFactor)

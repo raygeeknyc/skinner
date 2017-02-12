@@ -47,6 +47,11 @@ print "Crop to (%d,%d)=%d:(%d,%d)=%d" % (_xMin,_xMax,(_xMax-_xMin),_yMin,_yMax,(
 print "Scaling by (x,y) %f, %f" % (downsampleXFactor, downsampleYFactor)
 print "Scales to (%d,%d)" % (_width*downsampleXFactor,_height*downsampleYFactor)
 
+def get_brightness(img):
+    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+    averageBrightness = cv2.mean(hsv[:,:,2])
+    return bytearray(averageBrightness.tostring())
+
 def equalize_brightness(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     hsv[:,:,2] = cv2.equalizeHist(hsv[:,:,2])
@@ -69,6 +74,8 @@ try:
 			print "processed %d frames in %f seconds" % (frameCounter, frameTimerDuration)
 			frameCounter = 0
 			frameTimer = time.time() + frameTimerDuration
+			brightness = get_brightness(img)
+			print "Brightness " + brightness.toString()
 		cropImg = img[_yMin:_yMax,_xMin:_xMax]
 		smallImg = cv2.resize(cropImg, (0,0), fx=downsampleXFactor, fy=downsampleYFactor) 
 		equalizedImg = numpy.copy(cropImg)
