@@ -76,9 +76,9 @@ def equalize_hist(img):
 
 def get_brightness(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
-    averageBrightness = cv2.mean(hsv[:,:,2])
-    return bytearray(averageBrightness.tostring())
-    
+    averageBrightness = int(cv2.mean(hsv[:,:,2])[0])
+    return bytearray(format(averageBrightness,'05d'))
+
 def equalize_brightness(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     hsv[:,:,2] = cv2.equalizeHist(hsv[:,:,2])
@@ -119,6 +119,9 @@ def writeFrameHeader():
 	if written != 1:
 		print "failed to send header 3"
 		return False
+	if written != 1:
+		print "failed to send header 3"
+		return False
 	written = ser.write(brightness)
 	return True
 
@@ -148,13 +151,12 @@ frameTimer = time.time() + frameTimerDuration
 frameCounter = 0
 frameTimer = time.time() + frameTimerDuration
 frameCounter = 0
-brightness = get_brightness(img)
 try:
         for frame in stream:
                 img = frame.array
                 cap.truncate(0)
                 frameCounter += 1
-                if frameCounter > brightnessFrameSampleDuration:
+                if frameCounter > brightnessFrameSampleDuration or not frameCounter:
 			brightness = get_brightness(img)
                 if _DEBUG and time.time() > frameTimer:
                         print "processed %d frames in %f seconds" % (frameCounter, frameTimerDuration)

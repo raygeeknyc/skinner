@@ -49,8 +49,9 @@ print "Scales to (%d,%d)" % (_width*downsampleXFactor,_height*downsampleYFactor)
 
 def get_brightness(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
-    averageBrightness = cv2.mean(hsv[:,:,2])
-    return bytearray(averageBrightness.tostring())
+    averageBrightness = int(cv2.mean(hsv[:,:,2])[0])
+    return bytearray(format(averageBrightness,'05d'))
+
 
 def equalize_brightness(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -75,7 +76,7 @@ try:
 			frameCounter = 0
 			frameTimer = time.time() + frameTimerDuration
 			brightness = get_brightness(img)
-			print "Brightness " + brightness.toString()
+			print "Brightness " + brightness
 		cropImg = img[_yMin:_yMax,_xMin:_xMax]
 		smallImg = cv2.resize(cropImg, (0,0), fx=downsampleXFactor, fy=downsampleYFactor) 
 		equalizedImg = numpy.copy(cropImg)
