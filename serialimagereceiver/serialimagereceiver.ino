@@ -21,7 +21,7 @@ const byte FRAME_HEADER_3 = 0x03;
 #define FRAME_BRIGHTNESS_LENGTH 5
 
 unsigned long frame;
-int brightness;
+int frame_brightness;
 
 int row;
 
@@ -62,7 +62,7 @@ void setup() {
   frame = 0;
   row = 0;
   recvd = false;
-  brightness = 0;
+  frame_brightness = 0;
 
   FastLED.addLeds<CHIPSET, DISPLAY_LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
   FastLED.setCorrection(TypicalPixelString);
@@ -193,7 +193,7 @@ bool syncToFrame() {
     return false;
   }
   String brightnessString = (char*)header_brightness;
-  brightness = brightnessString.toInt();
+  frame_brightness = brightnessString.toInt();
   #ifdef _DEBUG
   Serial.println("sync");
   #endif
@@ -219,7 +219,8 @@ void setLEDLighting() {
   digitalWrite(ACTIVITY_LED_PIN, HIGH);
   delay(LED_SETTING_BLINK_DURATION_MS);
   digitalWrite(ACTIVITY_LED_PIN, LOW);
-  FastLED.setBrightness((digitalRead(BRIGHTNESS_JUMPER_PIN) == HIGH)?BRIGHTNESS_HIGH:BRIGHTNESS_DIM);
+  FastLED.setBrightness((digitalRead(BRIGHTNESS_JUMPER_PIN) == LOW)?BRIGHTNESS_DIM:
+    (frame_brightness > BRIGHTNESS_THRESHOLD)?BRIGHTNESS_HIGH:BRIGHTNESS_DIM);
   FastLED.setTemperature((digitalRead(LIGHT_TEMPERATURE_JUMPER_PIN) == HIGH)?LIGHT_TEMPERATURE_WARM:LIGHT_TEMPERATURE_COOL);
   FastLED.clear();
 }
