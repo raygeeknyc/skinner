@@ -19,7 +19,7 @@ if _DEBUG:
 		print "Equalizing brightness"
 frameTimerDuration = 1
 
-How many frames to capture before recalculating average brightness
+# How many frames to capture before recalculating average brightness
 brightnessFrameSampleDuration = 100
 
 # The desired resolution of the Pi camera
@@ -79,7 +79,7 @@ def equalize_hist(img):
 def get_brightness(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     averageBrightness = int(cv2.mean(hsv[:,:,2])[0])
-    return bytearray(format(averageBrightness,'0' + HEADER_BRIGHTNESS_LENGTH + 'd'))
+    return bytearray(format(averageBrightness,"0" + str(HEADER_BRIGHTNESS_LENGTH) + "d"))
 
 def equalize_brightness(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
@@ -108,7 +108,7 @@ print "Crop to (%d,%d)=%d:(%d,%d)=%d" % (_xMin,_xMax,(_xMax-_xMin),_yMin,_yMax,(
 print "Scaling by (x,y) %f, %f" % (downsampleXFactor, downsampleYFactor)
 print "Scales to (%d,%d)" % (_width*downsampleXFactor,_height*downsampleYFactor)
 
-def writeFrameHeader():
+def writeFrameHeader(brightness):
 	written = ser.write(FRAME_HEADER_1)
 	if written != 1:
 		print "failed to send header 1"
@@ -154,12 +154,13 @@ frameCounter = 0
 frameTimer = time.time() + frameTimerDuration
 frameCounter = 0
 try:
+	print "reading stream"
         for frame in stream:
                 img = frame.array
                 cap.truncate(0)
-                frameCounter += 1
                 if frameCounter > brightnessFrameSampleDuration or not frameCounter:
 			brightness = get_brightness(img)
+                frameCounter += 1
                 if _DEBUG and time.time() > frameTimer:
                         print "processed %d frames in %f seconds" % (frameCounter, frameTimerDuration)
                         frameCounter = 0
@@ -170,7 +171,7 @@ try:
                 small = cv2.resize(cropImg, (0,0), fx=downsampleXFactor, fy=downsampleYFactor)
 		if _DEBUG:
 			print "derez to {y=%d,x=%d}" % (len(small),len(small[0]))
-		writeFrameHeader();
+		writeFrameHeader(brightness);
 		writeFrame(small);
 		writeFrameFooter();
 
