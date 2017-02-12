@@ -19,7 +19,7 @@ if _DEBUG:
 		print "Equalizing brightness"
 frameTimerDuration = 1
 
-# How many frames to capture before recalculating average brightness
+# How many frames to capture before recalculating frame brightness
 brightnessFrameSampleDuration = 100
 
 # The desired resolution of the Pi camera
