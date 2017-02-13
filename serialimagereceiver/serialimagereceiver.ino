@@ -1,3 +1,4 @@
+//#define _DEBUG
 #include <FastLED.h>
 
 #define PANEL_HEIGHT 8
@@ -26,16 +27,15 @@ int frame_brightness;
 int row;
 
 // If the frame header brightness is below this value, dim the display brightness
-#define BRIGHTNESS_THRESHOLD 140
-
+#define BRIGHTNESS_THRESHOLD 100
+#define BRIGHTNESS_DIM 32
+#define BRIGHTNESS_HIGH 64
 #define LED_SETTING_BLINK_DURATION_MS 1000
 #define LIGHT_TEMPERATURE_JUMPER_PIN 14
 #define BRIGHTNESS_JUMPER_PIN 16
 #define DISPLAY_LED_PIN  3
 #define COLOR_ORDER RGB
 #define CHIPSET     WS2811
-#define BRIGHTNESS_DIM 16
-#define BRIGHTNESS_HIGH 64
 boolean brightness_switch;
 boolean temperature_switch;
 
@@ -170,8 +170,8 @@ void waitForByte(byte syncByte) {
 // and sets the brightness global
 bool syncToFrame() {
   byte b;
-  byte header_brightness[FRAME_BRIGHTNESS_LENGTH];
-
+  byte header_brightness[FRAME_BRIGHTNESS_LENGTH+1];
+  header_brightness[FRAME_BRIGHTNESS_LENGTH] = '\0';
   waitForByte(FRAME_HEADER_1);
   while (!getNextByte(&b))
     ;
@@ -185,6 +185,10 @@ bool syncToFrame() {
       ;
     header_brightness[i] = b;
   }
+  #ifdef _DEBUG
+  Serial.print("brightness");
+  Serial.println((char*)header_brightness);
+  #endif
 
   while (!getNextByte(&b))
     ;
