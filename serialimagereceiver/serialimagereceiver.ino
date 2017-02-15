@@ -27,9 +27,11 @@ int frame_brightness;
 int row;
 
 // If the frame header brightness is below this value, dim the display brightness
-#define BRIGHTNESS_THRESHOLD 90
-#define BRIGHTNESS_DIM 32
-#define BRIGHTNESS_HIGH 64
+#define BRIGHTNESS_MEDIUM_THRESHOLD 60
+#define BRIGHTNESS_BRIGHT_THRESHOLD 90
+#define BRIGHTNESS_DARK 16
+#define BRIGHTNESS_MEDIUM 32
+#define BRIGHTNESS_BRIGHT 64
 #define LED_SETTING_BLINK_DURATION_MS 1000
 #define LIGHT_TEMPERATURE_JUMPER_PIN 14
 #define BRIGHTNESS_JUMPER_PIN 16
@@ -223,8 +225,15 @@ void setLEDLighting() {
   digitalWrite(ACTIVITY_LED_PIN, HIGH);
   delay(LED_SETTING_BLINK_DURATION_MS);
   digitalWrite(ACTIVITY_LED_PIN, LOW);
-  FastLED.setBrightness((digitalRead(BRIGHTNESS_JUMPER_PIN) == LOW)?BRIGHTNESS_DIM:
-    (frame_brightness > BRIGHTNESS_THRESHOLD)?BRIGHTNESS_HIGH:BRIGHTNESS_DIM);
+  if (digitalRead(BRIGHTNESS_JUMPER_PIN) == LOW) {
+    FastLED.setBrightness(BRIGHTNESS_MEDIUM);
+  } else if (frame_brightness < BRIGHTNESS_MEDIUM_THRESHOLD) {
+      FastLED.setBrightness(BRIGHTNESS_DARK);
+  } else if (frame_brightness < BRIGHTNESS_BRIGHT_THRESHOLD) {
+      FastLED.setBrightness(BRIGHTNESS_MEDIUM);
+  } else {
+      FastLED.setBrightness(BRIGHTNESS_BRIGHT);
+  }
   FastLED.setTemperature((digitalRead(LIGHT_TEMPERATURE_JUMPER_PIN) == HIGH)?LIGHT_TEMPERATURE_WARM:LIGHT_TEMPERATURE_COOL);
   FastLED.clear();
 }
