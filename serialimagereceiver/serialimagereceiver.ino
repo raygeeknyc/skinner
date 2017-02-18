@@ -30,7 +30,7 @@ int row;
 #define BRIGHTNESS_MEDIUM_THRESHOLD 70
 #define BRIGHTNESS_BRIGHT_THRESHOLD 120
 #define BRIGHTNESS_DARK 16
-#define BRIGHTNESS_MEDIUM 32
+#define BRIGHTNESS_MEDIUM 48
 #define BRIGHTNESS_BRIGHT 64
 #define LED_SETTING_BLINK_DURATION_MS 1000
 #define LIGHT_TEMPERATURE_JUMPER_PIN 14
@@ -53,7 +53,7 @@ void setup() {
 
   HWSERIAL.begin(230400);
   HWSERIAL.setTimeout(1);
-  pinMode(ACTIVITY_LED_PIN, OUTPUT); 
+  pinMode(ACTIVITY_LED_PIN, OUTPUT);
   pinMode(BRIGHTNESS_JUMPER_PIN, INPUT_PULLUP);
   pinMode(LIGHT_TEMPERATURE_JUMPER_PIN, INPUT_PULLUP);
 
@@ -99,14 +99,14 @@ void getFrame() {
       pixels = 0;
     }
   }
-  #ifdef _DEBUG
+#ifdef _DEBUG
   Serial.print("END OF FRAME: ");
   Serial.println(frame++);
-  #endif
+#endif
   if (frame > 1000) {
-    #ifdef _DEBUG
+#ifdef _DEBUG
     Serial.println("Frame counter reset");
-    #endif
+#endif
     frame = 0;
   }
   row = 0;
@@ -119,13 +119,13 @@ int getPixelForCoord(const int x, const int y) {
     return coordForPanel2(x, y);
 }
 
-int coordForPanel1(const int x,const int y) {
+int coordForPanel1(const int x, const int y) {
   if (x % 2)
     return countUpPanel1(x, y);
   else
     return countDownPanel1(x, y);
 }
-  
+
 int coordForPanel2(const int x, const int y) {
   if (x % 2)
     return countUpPanel2(x, y);
@@ -143,36 +143,36 @@ int countUpPanel1(const int x, const int y) {
 
 int countDownPanel2(const int x, const int y) {
   return (PANEL_WIDTH * PANEL_HEIGHT - 1)
-    + (PANEL_HEIGHT * (PANEL_WIDTH - x))
-    - (PANEL_HEIGHT - (y - PANEL_HEIGHT))
-    + 1;
+         + (PANEL_HEIGHT * (PANEL_WIDTH - x))
+         - (PANEL_HEIGHT - (y - PANEL_HEIGHT))
+         + 1;
 }
 
 int countUpPanel2(const int x, const int y) {
   return (PANEL_WIDTH * PANEL_HEIGHT - 1)
-    + (PANEL_HEIGHT * (PANEL_WIDTH - x))
-    - (y - PANEL_HEIGHT);
+         + (PANEL_HEIGHT * (PANEL_WIDTH - x))
+         - (y - PANEL_HEIGHT);
 }
 
 void waitForByte(byte syncByte) {
-  int f=0;
+  int f = 0;
   byte b = ' ';
   while (b != syncByte) {
     while (!getNextByte(&b))
       ;
     f += 1;
   }
-  #ifdef _DEBUG
+#ifdef _DEBUG
   Serial.print("Footer: ");
-  Serial.println(f-1);
-  #endif
+  Serial.println(f - 1);
+#endif
 }
 
 // This returns true if a frame header was found
 // and sets the brightness global
 bool syncToFrame() {
   byte b;
-  byte header_brightness[FRAME_BRIGHTNESS_LENGTH+1];
+  byte header_brightness[FRAME_BRIGHTNESS_LENGTH + 1];
   header_brightness[FRAME_BRIGHTNESS_LENGTH] = '\0';
   waitForByte(FRAME_HEADER_1);
   while (!getNextByte(&b))
@@ -182,15 +182,15 @@ bool syncToFrame() {
     return false;
   }
 
-  for (int i=0;i<FRAME_BRIGHTNESS_LENGTH;i++) {
+  for (int i = 0; i < FRAME_BRIGHTNESS_LENGTH; i++) {
     while (!getNextByte(&b))
       ;
     header_brightness[i] = b;
   }
-  #ifdef _DEBUG
+#ifdef _DEBUG
   Serial.print("brightness");
   Serial.println((char*)header_brightness);
-  #endif
+#endif
 
   while (!getNextByte(&b))
     ;
@@ -200,9 +200,9 @@ bool syncToFrame() {
   }
   String brightnessString = (char*)header_brightness;
   frame_brightness = brightnessString.toInt();
-  #ifdef _DEBUG
+#ifdef _DEBUG
   Serial.println("sync");
-  #endif
+#endif
   return true;
 }
 
@@ -228,13 +228,13 @@ void setLEDLighting() {
   if (digitalRead(BRIGHTNESS_JUMPER_PIN) == LOW) {
     FastLED.setBrightness(BRIGHTNESS_MEDIUM);
   } else if (frame_brightness < BRIGHTNESS_MEDIUM_THRESHOLD) {
-      FastLED.setBrightness(BRIGHTNESS_DARK);
+    FastLED.setBrightness(BRIGHTNESS_DARK);
   } else if (frame_brightness < BRIGHTNESS_BRIGHT_THRESHOLD) {
-      FastLED.setBrightness(BRIGHTNESS_MEDIUM);
+    FastLED.setBrightness(BRIGHTNESS_MEDIUM);
   } else {
-      FastLED.setBrightness(BRIGHTNESS_BRIGHT);
+    FastLED.setBrightness(BRIGHTNESS_BRIGHT);
   }
-  FastLED.setTemperature((digitalRead(LIGHT_TEMPERATURE_JUMPER_PIN) == HIGH)?LIGHT_TEMPERATURE_WARM:LIGHT_TEMPERATURE_COOL);
+  FastLED.setTemperature((digitalRead(LIGHT_TEMPERATURE_JUMPER_PIN) == HIGH) ? LIGHT_TEMPERATURE_WARM : LIGHT_TEMPERATURE_COOL);
   FastLED.clear();
 }
 
