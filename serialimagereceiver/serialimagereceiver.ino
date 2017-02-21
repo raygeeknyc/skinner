@@ -27,7 +27,7 @@ int frame_brightness;
 int row;
 
 // If the frame header brightness is below this value, dim the display brightness
-#define BRIGHTNESS_MEDIUM_THRESHOLD 70
+#define BRIGHTNESS_MEDIUM_THRESHOLD 80
 #define BRIGHTNESS_BRIGHT_THRESHOLD 120
 #define BRIGHTNESS_DARK 16
 #define BRIGHTNESS_MEDIUM 48
