@@ -142,16 +142,11 @@ int countUpPanel1(const int x, const int y) {
 }
 
 int countDownPanel2(const int x, const int y) {
-  return (PANEL_WIDTH * PANEL_HEIGHT - 1)
-         + (PANEL_HEIGHT * (PANEL_WIDTH - x))
-         - (PANEL_HEIGHT - (y - PANEL_HEIGHT))
-         + 1;
+  return x * PANEL_HEIGHT + (y - PANEL_HEIGHT) ;
 }
 
 int countUpPanel2(const int x, const int y) {
-  return (PANEL_WIDTH * PANEL_HEIGHT - 1)
-         + (PANEL_HEIGHT * (PANEL_WIDTH - x))
-         - (y - PANEL_HEIGHT);
+  return x * PANEL_HEIGHT + (PANEL_HEIGHT - 1 - (y - PANEL_HEIGHT));
 }
 
 void waitForByte(byte syncByte) {
@@ -240,7 +235,7 @@ void setLEDLighting() {
 
 void loop() {
   digitalWrite(ACTIVITY_LED_PIN, LOW);
-  while (!syncToFrame()) Serial.println("Failed to Sync");
+   while (!syncToFrame()) Serial.println("Failed to Sync");
   digitalWrite(ACTIVITY_LED_PIN, HIGH);
   if (isLightingSettingChanged()) {
     setLEDLighting();
