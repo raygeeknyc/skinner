@@ -1,8 +1,13 @@
+//#define _TESTING
+
 //#define _DEBUG
+
 #include <FastLED.h>
 
 #define PANEL_HEIGHT 8
 #define PANEL_WIDTH 32
+const int PANEL_SIZE = PANEL_HEIGHT * PANEL_WIDTH;
+const int PANEL_OFFSET = PANEL_SIZE - 1;
 
 #define HWSERIAL Serial2
 #define ACTIVITY_LED_PIN 13
@@ -47,10 +52,36 @@ boolean temperature_switch;
 #define LIGHT_TEMPERATURE_WARM Tungsten100W
 #define LIGHT_TEMPERATURE_COOL CoolWhiteFluorescent
 
+void testCoordinateMapping(int x, int y) {
+  Serial.print("logical coordinates (x,y):");
+  Serial.print(x);
+  Serial.print(",");
+  Serial.print(y);
+  Serial.print(": pixel:");
+  Serial.println(getPixelForCoord(x,y));
+}
+
+void showTestCoordinates() {
+  testCoordinateMapping(0, 0);
+  testCoordinateMapping(0, 7);
+  testCoordinateMapping(0, 8);
+  testCoordinateMapping(0, 15);
+  
+  testCoordinateMapping(30, 0);
+  testCoordinateMapping(31, 0);
+  testCoordinateMapping(31, 7);
+  testCoordinateMapping(30, 8);
+  testCoordinateMapping(30, 15);
+  testCoordinateMapping(31, 8);
+  testCoordinateMapping(31, 15);
+}
+
 void setup() {
   Serial.begin(9600);
-  Serial.println("/setup");
-
+  #ifdef _DEBUG
+  Serial.println("setup");
+  #endif
+  
   HWSERIAL.begin(230400);
   HWSERIAL.setTimeout(1);
   pinMode(ACTIVITY_LED_PIN, OUTPUT);
@@ -71,7 +102,16 @@ void setup() {
   setLEDLighting();
   FastLED.show();
 
+  #ifdef _DEBUG
   Serial.println("/setup");
+  Serial.println("/setup");
+  #endif
+
+  #ifdef _TESTING
+  Serial.println("Testing coordinate mapping");
+  showTestCoordinates();
+  #endif
+
 }
 
 bool getNextByte(byte *b) {
@@ -142,11 +182,11 @@ int countUpPanel1(const int x, const int y) {
 }
 
 int countDownPanel2(const int x, const int y) {
-  return x * PANEL_HEIGHT + (y - PANEL_HEIGHT) ;
+  return PANEL_OFFSET + (x * PANEL_HEIGHT) + (y - PANEL_HEIGHT + 1) ;
 }
 
 int countUpPanel2(const int x, const int y) {
-  return x * PANEL_HEIGHT + (PANEL_HEIGHT - 1 - (y - PANEL_HEIGHT));
+  return PANEL_OFFSET + (x + 1) * PANEL_HEIGHT - (y - PANEL_HEIGHT);
 }
 
 void waitForByte(byte syncByte) {
