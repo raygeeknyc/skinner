@@ -20,7 +20,7 @@ include <defs.scad>
         translate([t1/2+td, ch-b, t1]) {
             rotate([90, 0, 90]) cylinder(h=t1*2, d=b);
         }
-        translate([2*t1+td+pid/2-c/2, 0, t1/2]) {
-            cube([c, 2*t1, n]);
+        translate([2*t1+td+pid/2-cp/2, 0, t1/2]) {
+            cube([cp, 2*t1, n]);
         }
     }
