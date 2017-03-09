@@ -23,10 +23,10 @@ union() {
     */
     translate([-1*(d+t2+t1),(w+2*t2)/2,0]) {
         difference() {
-            cube([d+t2+t1, cc+2*t1, n+t1]);
-            translate([t1, t1, 0]) cube([e, cc, t1]);
-            translate([t1, t1, t1]) cube([d+t1, cc, n]);
-            translate([0, t1, t2]) cube([t1, cc, t1]);
+            cube([d+t2+t1, cc+2*t1, n+sch]);
+            translate([t1, t1, 0]) cube([e, cc, sch]);  // the bottom slot
+            translate([t1, t1, sch]) cube([d+t1, cc, n]); // the cavity
+            translate([0, t1, t2]) cube([t1, cc, sch]);  // the topside slot for the ribbon
         }
     }
  
