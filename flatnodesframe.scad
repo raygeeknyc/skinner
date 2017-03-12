@@ -41,6 +41,11 @@ union() {
         translate([0,(w+2*t2)/2-channelo,t2+b/2]) {
             rotate([90, 90, 90]) cylinder(h=t2+t1, d=b);
         }
+        
+        // This makes a hole for the cables between the two panels.
+        translate([h,(w+2*t2)/2-channelo,t2+conn/2]) {
+            rotate([90, 90, 90]) cylinder(h=t2+t1*2, d=conn);
+        }
 
         translate([t1, t2, t3]) cube([h, w, n]);
         

@@ -28,3 +28,4 @@ l1=40;
 l2=10;
 p2=12.5; // Offset for wire slots
 channelo = 30;  // Offset for cable in
+conn = 7;  // Diameter of the channel for inter-panel connectors
