@@ -21,7 +21,9 @@ include <defs.scad>
             translate([t1, 0, 0]) cylinder(h=t1*2, d=b);
         }
         translate([t1/2+td, ch-b, t1]) {
-            rotate([90, 0, 90]) cylinder(h=t1*2, d=b);
+            translate([-1*t1, 0, 0]) rotate([90, 0, 90]) cylinder(h=t1*4, d=b);
+            translate([0, 0, 0]) cylinder(h=t1*2, d=b);
+            translate([b+t1/2, 0, 0]) cylinder(h=t1*2, d=b);
         }
         translate([2*t1+td+pid/2-cp/2+t1, 0, t1/2]) {
             cube([cp, 2*t1, t1]);
