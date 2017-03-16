@@ -26,7 +26,7 @@ union() {
             cube([d+t2+t1, cc+2*t1, n+sch]);
             translate([t1, t1, 0]) cube([e, cc, sch]);  // the bottom slot
             translate([t1, t1, sch]) cube([d+t1, cc, n]); // the cavity
-            translate([0, t1, t2]) cube([t1, cc, sch]);  // the topside slot for the ribbon
+            translate([0, t1, t2]) cube([t1, cc, n+sch-t2-t2/2]);  // the topside slot for the ribbon
         }
     }
  
@@ -50,9 +50,18 @@ union() {
         translate([t1, t2, t3]) cube([h, w, n]);
         
         translate([t1+m, t2, t3]) cube([h-t2-m, w, n+t2]);
-        translate([h-t2-s/2-p2, t2+z-t1, 0]) cube([s, w-2*(z-t1), t3]);
-        translate([t1+h+t2+s/2+p2,  t2+z-t1, 0]) cube([s, w-2*(z-t1), t3]);
  
+        // This makes the two panel wire slots
+        // top
+        translate([h-t2-s/2-p2, t2+z-t1, 0]) cube([s, w-2*(z-t1)-((w+2*t2)/2), t3]);
+        translate([h-t2-s/2-p2,  t2-conn/2+z-t1+(w-2*(z-t1)-((w+2*t2)/2)), 0]) cube([h-(h-t2-s/2-p2), s , t3]);
+
+        // bottom
+        translate([t1+h+t2+s/2+p2,  t2-conn/2+z-t1+(w-2*(z-t1)-((w+2*t2)/2)), 0]) cube([s, w+conn/2-z-(z-t1+(w-2*(z-t1)-((w+2*t2)/2))) , t3]); 
+        
+        translate([h+t2+t1*2, t2-conn/2+z-t1+(w-2*(z-t1)-((w+2*t2)/2)), 0]) cube([h-(h-t2-s/2-p2), s , t3]);
+
+
         translate([t1+h+t2, t2, t3]) cube([h, w, n]);
         
         translate([t1+h+t2+m, t2, t3]) cube([h-2*m, w, n+t2]);
