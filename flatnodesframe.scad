@@ -14,7 +14,7 @@ union() {
     difference() {
         union() {
             translate([-1*(t1+t2/2), w-2*t1, 0]) cube([t1+t2/2, 2*t1+2*t2,t3]);
-            translate([-1*(t1+t2), w-t1+t2, 0]) cylinder(d=2*t1+2*t2, t3);
+            translate([-1*(t1+t2), w-t1+t2, 0])  cylinder(d=2*t1+2*t2, t3);
         }
         translate([-1*(t1+t2), w-t1+t2, 0]) cylinder(d=2*t1, t3);
         translate([-1*(t2+t1), w-t1+t2, 0]) cube([t1,t1+t2,t3]);
@@ -38,16 +38,16 @@ union() {
     
         // This makes a hole for the power and data cable into the top panel.
         translate([0,(w+2*t2)/2-channelo,t2+b/2]) {
-            rotate([90, 90, 90]) cylinder(h=t2+p2+conn/2, d=conn);
+            rotate([90, 90, 90]) scale([1.0, 1.5, 1.0]) cylinder(h=t2+p2+conn/2, d=conn);
         }
         
         // This makes a channel for the input power and data to the top panel input
-        translate([t2+p2+conn/2, (w+2*t2)/2-channelo-conn/2, t2+b/2]) rotate([90, 90, 180]) cylinder(h=w-((w+2*t2)/2-channelo-conn/2)-z, d=conn);
+        translate([t2+p2+conn/2, (w+2*t2)/2-channelo-conn/2*1.5, t2+b/2]) rotate([90, 90, 180]) scale([1.0, 1.5, 1.0]) cylinder(h=w-((w+2*t2)/2-channelo-conn/2)-z, d=conn);
         translate([t2+p2+conn/2, w-z , t2+b/2-(conn/2)]) rotate([0, 0, 90]) cylinder(h=w-((w+2*t2)/2-channelo-conn/2)-z, d=conn*2);
         
         // This makes a hole for the cables between the two panels.
         translate([h,(w+2*t2)/2-channelo,t2+conn/2]) {
-            rotate([90, 90, 90]) cylinder(h=t2+t1*2, d=conn);
+            rotate([90, 90, 90]) scale([1.0, 1.5, 1.0])cylinder(h=t2+t1*2, d=conn);
         }
 
         translate([t1, t2, t3]) cube([h, w, n]);
