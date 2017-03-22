@@ -19,6 +19,7 @@ union() {
         translate([-1*(t1+t2), w-t1+t2, 0]) cylinder(d=2*t1, t3);
         translate([-1*(t2+t1), w-t1+t2, 0]) cube([t1,t1+t2,t3]);
     }
+    
     /* This makes the centered holder for a camera with a lip and slots for the ribbon cable at the bottom and the top edge.
     */
     translate([-1*(d+t2+t1),(w+2*t2)/2,0]) {
@@ -36,10 +37,10 @@ union() {
         cube([2*h+t2+2*t1, w+2*t2, n+t3+t2]);
     
         // This makes a hole for the power and data cable into the top panel.
-        translate([0,(w+2*t2)/2-channelo,t2+b/2]) rotate([90, 90, 90]) scale([1.0, 1.5, 1.0]) cylinder(h=t2+h-p2-conn/2, d=conn);
+        translate([0,(w+2*t2)/2-channelo,conn/2+1]) rotate([90, 90, 90]) scale([1.0, 1.5, 1.0]) cylinder(h=t2+h-p2-conn/2, d=conn);
         
         // This makes a channel for the input power and data to the top panel input
-        translate([t2+h-p2-conn/2, t2+z+t1, t2+b/2]) {
+        translate([t2+h-p2-conn/2, t2+z+t1, conn/2+1]) {
             rotate([90, 90, 180]) scale([1.0, 1.5, 1.0]) cylinder(h=((w+2*t2)/2-channelo)-(z-t2/2), d=conn);
         translate([0, 0, -1*(conn/2)]) rotate([0, 0, 90]) cylinder(h=20, d=conn*2);
        }
@@ -49,14 +50,14 @@ union() {
     translate([t1+m, t2, t3]) cube([h-t2-m, w, n+t2]);
  
      // This makes the channel from the top panel to the bottom one
-     translate([t2+h-p2-conn/2, w-z, t2+b/2]) {
+     translate([t2+h-p2-conn/2, w-z, conn/2+1]) {
         translate([0, 0, -1*(conn/2)]) rotate([0, 0, 90]) cylinder(h=20, d=conn*2);
           rotate([90, 90, 90]) scale([1.0, 1.5, 1.0]) cylinder(h=h, d=conn);
        translate([h, 0, -1*(conn/2)]) rotate([0, 0, 90]) cylinder(h=20, d=conn*2);
         }
         
         // This makes the channel across the bottom panel
-       translate([t2+h+h-p2-conn/2, t2+z+t1, t2+b/2]) {
+       translate([t2+h+h-p2-conn/2, t2+z+t1, conn/2+1]) {
             rotate([90, 90, 180]) scale([1.0, 1.5, 1.0]) cylinder(h=w-z*2, d=conn);
         translate([0, 0, -1*(conn/2)]) rotate([0, 0, 90]) cylinder(h=20, d=conn*2);
        }
