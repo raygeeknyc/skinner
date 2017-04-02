@@ -24,9 +24,9 @@ union() {
     */
     translate([-1*(d+t2+t1),(w+2*t2)/2,0]) {
         difference() {
-            cube([d+t2+t1, cc+2*t1, n+sch]);
-            translate([t1, t1, sch]) cube([d+t1, cc, n]); // the cavity
-            translate([0, t1, t2]) cube([t1, cc, n+sch-t2-t2/2]);  // the topside slot for the ribbon
+            cube([d+t2+t1, d+2*t1, n+sch]);
+            translate([t1, t1, sch]) cube([d+t1, d, n]); // the cavity
+            translate([0, t1+((d-cc)/2), t2]) cube([t1, cc, n+sch-t2-t2/2]);  // the topside slot for the ribbon
         }
     }
  
