@@ -20,11 +20,21 @@ include <defs.scad>
             rotate([90, 0, 90]) scale([1.5, 1.0, 1.0]) cylinder(h=t1*2, d=b);
             translate([t1, 0, 0]) scale([1.0, 1.5, 1.0])cylinder(h=t1*2, d=b);
         }
+      
+        translate([t1/2+td, b+t1*2, t1]) {
+            translate([-1*t1, 0, 0]) rotate([90, 0, 90]) scale([1.5, 1.0, 1.0]) cylinder(h=t1*4, d=b);
+            translate([0, 0, 0]) scale([1.0, 1.5, 1.0])cylinder(h=t1*2, d=b);
+            translate([b+t1/2, 0, 0]) scale([1.0, 1.5, 1.0])cylinder(h=t1*2, d=b);
+        }
+        
+       // This is the top channel near the ribbon slot
         translate([t1/2+td, ch-b, t1]) {
             translate([-1*t1, 0, 0]) rotate([90, 0, 90]) scale([1.5, 1.0, 1.0]) cylinder(h=t1*4, d=b);
             translate([0, 0, 0]) scale([1.0, 1.5, 1.0])cylinder(h=t1*2, d=b);
             translate([b+t1/2, 0, 0]) scale([1.0, 1.5, 1.0])cylinder(h=t1*2, d=b);
         }
+        
+     // This is the lower channel
         translate([2*t1+td+pid/2-cp/2+t1, 0, t1/2]) {
             cube([cp, 2*t1, t1]);
         }
