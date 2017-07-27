@@ -1,6 +1,6 @@
-//#define _TESTING
+#define _TESTING
 
-//#define _DEBUG
+#define _DEBUG
 
 #include <FastLED.h>
 
@@ -110,8 +110,25 @@ void setup() {
   #ifdef _TESTING
   Serial.println("Testing coordinate mapping");
   showTestCoordinates();
+  showTestLEDPattern();
   #endif
 
+}
+
+void showTestLEDPattern() {
+  Serial.println("Displaying test pattern");
+  setLEDLighting();
+  for (int x=0; x<COLUMNS; x++) {
+    for (int y=0; y<ROWS; y++) {
+      if ((x % 2) && (y % 2) )
+       leds[getPixelForCoord(x, y)] = CRGB( 255, 0, 0);
+       else
+       leds[getPixelForCoord(x, y)] = CRGB( 255, 0, 0);
+    }
+  }  
+  FastLED.show();
+  Serial.println("Displayed test pattern");
+  delay(5000);
 }
 
 bool getNextByte(byte *b) {
