@@ -5,19 +5,17 @@ union() {
         /* This makes 2 hook shaped holders at the edges of the frame top.
         */
         union() {
-            translate([-1*(t1+t2/2), 0, 0]) cube([t1+t2/2, 2*t1+2*t2,t3]);
-            translate([-1*(t1+t2), t1+t2, 0]) cylinder(d=2*t1+2*t2, t3);
+            translate([-1*(t1+t2), 2*t1+t2, 0]) cylinder(d=3*t1+3*t2, t2);
         }
-        translate([-1*(t1+t2), t1+t2, 0]) cylinder(d=2*t1, t3);
-        translate([-1*(t2+t1), t1+t2, 0]) cube([t1,t1+t2,t3]);
+        translate([-1*(t1+t2), 2*t1+t2, 0]) cylinder(d=3*t1, t2);
+        translate([-1*(t2+t1), 2*t1+t2, 0]) cube([t1,2*t1+2*t2,t2]);
     }
     difference() {
         union() {
-            translate([-1*(t1+t2/2), w-2*t1, 0]) cube([t1+t2/2, 2*t1+2*t2,t3]);
-            translate([-1*(t1+t2), w-t1+t2, 0])  cylinder(d=2*t1+2*t2, t3);
+            translate([-1*(t1+t2), w-(2*t2), 0])  cylinder(d=3*t1+3*t2, t2);
         }
-        translate([-1*(t1+t2), w-t1+t2, 0]) cylinder(d=2*t1, t3);
-        translate([-1*(t2+t1), w-t1+t2, 0]) cube([t1,t1+t2,t3]);
+        translate([-1*(t1+t2), w-(2*t2), 0]) cylinder(d=3*t1, t2);
+        translate([-1*(t2+t1), w-(2*t2), 0]) cube([t1,2*t1+2*t2,t2]);
     }
     
     /* This makes the centered holder for a camera with a lip and slots for the ribbon cable at the bottom and the top edge.
