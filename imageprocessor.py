@@ -61,6 +61,8 @@ ser.isOpen()
 
 # Open the video capture device
 camera = PiCamera()
+camera.vflip = True
+camera.hflip = True
 camera.resolution = resolution
 if framerate > 0:
         camera.framerate=framerate
@@ -98,8 +100,8 @@ _xMin = xLeft
 _xMax = resolution[0]-xRight
 _width = _xMax+1 - _xMin
 _height = int(_displayAspectRatio * _width)
-_yMin = int((resolution[1] - _height)/2)
-_yMax = _yMin + _height
+_yMax = int(resolution[1])  # The camera is above the screen by several inches so we aim for the bottom of the camera's FOV
+_yMin = _yMax - _height
 print "min = %d, max = %d, height = %d" % (_yMin, _yMax, _height)
 
 downsampleXFactor = displayWidth / _width
